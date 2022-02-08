@@ -2,6 +2,7 @@
 
 # local files and folders
 NOTES.md
+.eslintcache
 
 # dependencies
 /node_modules
