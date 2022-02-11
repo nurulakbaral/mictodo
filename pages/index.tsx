@@ -30,24 +30,26 @@ export default function Home() {
       <Head>
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
-      <div>
-        <h1 className='text-center text-8xl mt-12 font-medium'>Hello Mictodo</h1>
-      </div>
-      {!authorizedUser && (
-        <div className='text-center mt-12 flex justify-center'>
-          <Button onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
-            <FcGoogle className='w-8 h-8 mr-4' />
-            <h1 className='text-lg font-medium'>Login with Google</h1>
-          </Button>
+      <main className='pt-12'>
+        <div>
+          <h1 className='text-center text-8xl font-medium font-poppins'>Hello Mictodo</h1>
         </div>
-      )}
-      {authorizedUser && (
-        <div className='text-center mt-12 flex justify-center'>
-          <Button onClick={handleLogout} className='py-3 px-6 rounded-md flex justify-center items-center'>
-            <h1 className='text-lg font-medium'>Sign out</h1>
-          </Button>
-        </div>
-      )}
+        {!authorizedUser && (
+          <div className='text-center mt-12 flex justify-center'>
+            <Button onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
+              <FcGoogle className='w-8 h-8 mr-4' />
+              <h1 className='text-lg font-medium'>Login with Google</h1>
+            </Button>
+          </div>
+        )}
+        {authorizedUser && (
+          <div className='text-center mt-12 flex justify-center'>
+            <Button onClick={handleLogout} className='py-3 px-6 rounded-md flex justify-center items-center'>
+              <h1 className='text-lg font-medium font-poppins'>Sign out</h1>
+            </Button>
+          </div>
+        )}
+      </main>
     </>
   )
 }
