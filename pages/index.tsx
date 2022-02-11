@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
-import { supabaseClient } from '~/src/supabaseClient'
-import { Button } from '~/src/components/Button'
+import { supabaseClient } from '~/src/libs/supabase-client'
+import { Button } from '~/src/components/button'
 import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
-import type { User, Session } from '@supabase/supabase-js'
+import type { Session } from '@supabase/supabase-js'
 
 export default function Home() {
   const router = useRouter()
