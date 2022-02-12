@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { Button } from '~/src/components/button-base'
+import { ButtonBase } from '~/src/components/button-base'
 import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
@@ -52,17 +52,17 @@ export default function Home() {
         </div>
         {!authorizedUser && (
           <div className='text-center flex justify-center'>
-            <Button onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
+            <ButtonBase onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
               <FcGoogle className='w-8 h-8 mr-4' />
               <h1 className='text-lg font-medium'>Login with Google</h1>
-            </Button>
+            </ButtonBase>
           </div>
         )}
         {authorizedUser && (
           <div className='text-center mt-12 flex justify-center'>
-            <Button onClick={handleLogout} className='py-3 px-6 rounded-md flex justify-center items-center'>
+            <ButtonBase onClick={handleLogout} className='py-3 px-6 rounded-md flex justify-center items-center'>
               <h1 className='text-lg font-medium font-poppins'>Sign out</h1>
-            </Button>
+            </ButtonBase>
           </div>
         )}
       </main>
