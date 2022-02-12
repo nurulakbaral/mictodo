@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { Button } from '~/src/components/button'
+import { Button } from '~/src/components/button-base'
 import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
@@ -17,18 +17,18 @@ export default function Home() {
       router.reload()
       return
     }
-    setTimeout(() => {
-      setAuthorizedUser(session)
-    }, 800)
     router.push('/dashboard')
   })
   const handleLogin = async () => await supabaseClient.auth.signIn({ provider: 'google' })
   const handleLogout = async () => await supabaseClient.auth.signOut()
   useEffect(() => {
     const authorizedUserRestored: Session | null = JSON.parse(localStorage.getItem('supabase.auth.token') as string)
-    setTimeout(() => {
+    const loadingIndicator = setTimeout(() => {
       setAuthorizedUser(authorizedUserRestored)
     }, 800)
+    return () => {
+      clearTimeout(loadingIndicator)
+    }
   }, [])
   if (authorizedUser === undefined) {
     return (

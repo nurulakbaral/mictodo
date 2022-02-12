@@ -4,9 +4,10 @@ import { useQuery } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
-import { Input } from '~/src/components/input'
 import { useForm } from 'react-hook-form'
 import { PlusIcon } from '@heroicons/react/outline'
+import { Input } from '@chakra-ui/react'
+import Link from 'next/link'
 
 type FormValues = {
   task: string
@@ -44,6 +45,11 @@ export default function Dashboard() {
       </Head>
       <main className='pt-32'>
         <div>
+          <h1>
+            <Link href='/'>Home</Link>
+          </h1>
+        </div>
+        <div>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </div>
@@ -55,11 +61,17 @@ export default function Dashboard() {
           >
             {placeholder && (
               <div className='flex items-center absolute left-4 pointer-events-none'>
-                <PlusIcon className='w-6 h-6 mr-4 text-gray-700' />
+                <PlusIcon className='w-6 h-6 mr-4 text-gray-500' />
                 <h6 className='text-gray-700 text-base'>Add a task</h6>
               </div>
             )}
-            <Input className='font-poppins' autoComplete='off' {...register('task')} />
+            <Input
+              autoComplete='off'
+              className='font-poppins'
+              focusBorderColor='twGray.400'
+              size='lg'
+              {...register('task')}
+            />
           </div>
         </form>
       </main>
