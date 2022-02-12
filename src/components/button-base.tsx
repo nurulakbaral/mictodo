@@ -1,9 +1,9 @@
 import React from 'react'
 import type { BaseProps } from '~/src/types'
 
-type ButtonProps = BaseProps<{}, 'button'>
+type ButtonBaseProps = BaseProps<{}, 'button'>
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonBaseProps>(
   ({ children, className = '', ...props }, ref): JSX.Element => (
     <button
       className={`${className} border-[1px] border-gray-200 shadow-md`}
@@ -16,4 +16,4 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ),
 )
 
-Button.displayName = 'Button'
+ButtonBase.displayName = 'ButtonBase'

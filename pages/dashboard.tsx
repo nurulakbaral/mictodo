@@ -44,11 +44,11 @@ export default function Dashboard() {
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
       <main className='pt-32'>
-        <div>
+        {/* <div>
           <h1>
             <Link href='/'>Home</Link>
           </h1>
-        </div>
+        </div> */}
         <div>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
