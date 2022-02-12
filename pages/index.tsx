@@ -30,12 +30,15 @@ export default function Home() {
       <Head>
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
-      <main className='pt-12'>
-        <div>
-          <h1 className='text-center text-8xl font-medium font-poppins'>Hello Mictodo</h1>
+      <main className='pt-32'>
+        <div className='mx-auto w-5/6 mb-40'>
+          <h1 className='text-center text-6xl font-medium font-poppins mb-6'>Mictodo</h1>
+          <h2 className='text-center text-base font-poppins text-gray-600'>
+            The drawback of most To Do applications is the absence of an Activity List. Mictodo comes with it 🤟
+          </h2>
         </div>
         {!authorizedUser && (
-          <div className='text-center mt-12 flex justify-center'>
+          <div className='text-center flex justify-center'>
             <Button onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
               <FcGoogle className='w-8 h-8 mr-4' />
               <h1 className='text-lg font-medium'>Login with Google</h1>
