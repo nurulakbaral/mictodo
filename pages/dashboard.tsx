@@ -8,6 +8,8 @@ import { useForm } from 'react-hook-form'
 import { PlusIcon } from '@heroicons/react/outline'
 import { Input } from '@chakra-ui/react'
 import Link from 'next/link'
+import { InputTask } from '~/src/components/input-task'
+import { InputChecklist } from '~/src/components/input-checklist'
 
 type FormValues = {
   task: string
@@ -36,8 +38,6 @@ export default function Dashboard() {
     }
     console.log(values)
   }
-  const handlePlaceholderFocus = () => setPlaceholder((prevState) => (taskValue !== '' ? false : !prevState))
-  const handlePlaceholderBlur = () => setPlaceholder((prevState) => (taskValue !== '' ? false : !prevState))
   return (
     <>
       <Head>
@@ -49,41 +49,37 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </div>
         <div className='pt-12 pb-36'>
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((item) => (
-            <div key={item} className='w-5/6 mx-auto h-12 flex items-center relative mb-2'>
-              <Input
-                colorScheme='white'
-                autoComplete='off'
-                className='font-poppins'
-                focusBorderColor='twGray.400'
-                size='lg'
-                defaultValue={`My Task ${item}`}
-              />
-            </div>
+          {[1, 2, 3].map((item) => (
+            <InputChecklist
+              key={item}
+              CheckboxPros={{
+                colorScheme: 'twGray',
+              }}
+              InputProps={{
+                colorScheme: 'white',
+                autoComplete: 'off',
+                className: 'font-poppins',
+                focusBorderColor: 'twGray.400',
+                pl: 12,
+                size: 'lg',
+                defaultValue: `My Task`,
+              }}
+            />
           ))}
         </div>
         <div className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
           <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={onSubmit(handleSubmit)}>
-            <div
-              onFocus={handlePlaceholderFocus}
-              onBlur={handlePlaceholderBlur}
-              className='w-5/6 mx-auto h-12 flex items-center relative'
-            >
-              {placeholder && (
-                <div className='flex items-center absolute left-4 pointer-events-none'>
-                  <PlusIcon className='w-6 h-6 mr-4 text-gray-500' />
-                  <h6 className='text-gray-700 text-base'>Add a task</h6>
-                </div>
-              )}
-              <Input
-                colorScheme='white'
-                autoComplete='off'
-                className='font-poppins'
-                focusBorderColor='twGray.400'
-                size='lg'
-                {...register('task')}
-              />
-            </div>
+            <InputTask
+              value={taskValue}
+              InputProps={{
+                colorScheme: 'white',
+                autoComplete: 'off',
+                className: 'font-poppins',
+                focusBorderColor: 'twGray.400',
+                size: 'lg',
+                ...register('task'),
+              }}
+            />
           </form>
         </div>
       </main>
