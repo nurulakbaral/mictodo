@@ -61,7 +61,7 @@ export default function Dashboard() {
               InputProps={{
                 colorScheme: 'white',
                 autoComplete: 'off',
-                className: 'font-poppins',
+                className: 'font-poppins cursor-default',
                 focusBorderColor: 'twGray.400',
                 pl: 12,
                 size: 'lg',
