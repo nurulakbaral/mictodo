@@ -9,6 +9,8 @@ import { InputTask } from '~/src/components/input-task'
 import { InputChecklist } from '~/src/components/input-checklist'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
 import { addCheklist } from '~/src/store/features/cheklist'
+import { DrawerBase } from '~/src/components/drawer-base'
+import { useDisclosure } from '@chakra-ui/react'
 
 type FormValues = {
   task: string
@@ -18,6 +20,7 @@ export default function Dashboard() {
   const router = useRouter()
   const checklist = useAppSelector((state) => state.cheklistFeature.cheklist)
   const dispatch = useAppDispatch()
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit: onSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', () => supabaseClient.auth.user())
   const taskValue = watch('task')
@@ -47,6 +50,7 @@ export default function Dashboard() {
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
       <main className='pt-12'>
+        <DrawerBase isOpen={isOpen} onClose={onClose} />
         <div>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
@@ -66,6 +70,7 @@ export default function Dashboard() {
                 pl: 12,
                 size: 'lg',
                 defaultValue: value,
+                onClick: onOpen,
               }}
             />
           ))}
