@@ -5,11 +5,10 @@ import { supabaseClient } from '~/src/libs/supabase-client'
 import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
-import { PlusIcon } from '@heroicons/react/outline'
-import { Input } from '@chakra-ui/react'
-import Link from 'next/link'
 import { InputTask } from '~/src/components/input-task'
 import { InputChecklist } from '~/src/components/input-checklist'
+import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
+import { addCheklist } from '~/src/store/features/cheklist'
 
 type FormValues = {
   task: string
@@ -17,8 +16,9 @@ type FormValues = {
 
 export default function Dashboard() {
   const router = useRouter()
-  const [placeholder, setPlaceholder] = React.useState<boolean>(true)
-  const { register, handleSubmit: onSubmit, watch } = useForm<FormValues>()
+  const checklist = useAppSelector((state) => state.cheklistFeature.cheklist)
+  const dispatch = useAppDispatch()
+  const { register, handleSubmit: onSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', () => supabaseClient.auth.user())
   const taskValue = watch('task')
   if (isLoading) {
@@ -36,7 +36,10 @@ export default function Dashboard() {
       alert('Please enter a task')
       return
     }
-    console.log(values)
+    dispatch(addCheklist(values.task))
+    reset({
+      task: '',
+    })
   }
   return (
     <>
@@ -49,9 +52,9 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </div>
         <div className='pt-12 pb-36'>
-          {[1, 2, 3].map((item) => (
+          {checklist.map(({ id, value }) => (
             <InputChecklist
-              key={item}
+              key={id}
               CheckboxPros={{
                 colorScheme: 'twGray',
               }}
@@ -62,7 +65,7 @@ export default function Dashboard() {
                 focusBorderColor: 'twGray.400',
                 pl: 12,
                 size: 'lg',
-                defaultValue: `My Task`,
+                defaultValue: value,
               }}
             />
           ))}

@@ -6,19 +6,23 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 import { Layout } from '~/src/components/layout'
 import { LayoutContainer } from '~/src/components/layout-container'
 import { ChakraProvider } from '@chakra-ui/provider'
+import { Provider } from 'react-redux'
+import { store } from '~/src/store'
 
 const queryClient = new QueryClient()
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ChakraProvider theme={theme}>
-        <Layout>
-          <LayoutContainer>
-            <Component {...pageProps} />
-          </LayoutContainer>
-        </Layout>
-      </ChakraProvider>
-      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      <Provider store={store}>
+        <ChakraProvider theme={theme}>
+          <Layout>
+            <LayoutContainer>
+              <Component {...pageProps} />
+            </LayoutContainer>
+          </Layout>
+        </ChakraProvider>
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+      </Provider>
     </QueryClientProvider>
   )
 }
