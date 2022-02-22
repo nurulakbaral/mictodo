@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {
   Drawer,
+  DrawerProps,
   DrawerBody,
   DrawerFooter,
   DrawerHeader,
@@ -10,17 +11,19 @@ import {
   Button,
   Input,
   UseDisclosureProps,
+  Box,
 } from '@chakra-ui/react'
 
-type DrawerBaseProps = UseDisclosureProps
+type DrawerBaseProps = { cheklistGroupTitle: string } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 
-export const DrawerBase = ({ isOpen = false, onClose = () => {} }: DrawerBaseProps) => {
-  const btnRef = React.useRef(null)
+export const DrawerBase = ({ isOpen = false, onClose = () => {}, placement = 'right' }: DrawerBaseProps) => {
   return (
-    <Drawer isOpen={isOpen} placement='right' onClose={onClose} finalFocusRef={btnRef}>
+    <Drawer isOpen={isOpen} placement={placement} onClose={onClose}>
       <DrawerOverlay />
       <DrawerContent>
-        <DrawerCloseButton />
+        <Box mb={8}>
+          <DrawerCloseButton className='text-gray-400' />
+        </Box>
         <DrawerHeader>Create your account</DrawerHeader>
         <DrawerBody>
           <Input placeholder='Type here...' />

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useQuery } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
@@ -10,7 +10,8 @@ import { InputChecklist } from '~/src/components/input-checklist'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
 import { addCheklist } from '~/src/store/features/cheklist'
 import { DrawerBase } from '~/src/components/drawer-base'
-import { useDisclosure } from '@chakra-ui/react'
+import { useDisclosure, Box } from '@chakra-ui/react'
+import { CheklistItem } from '~/src/components/cheklist-item'
 
 type FormValues = {
   task: string
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const router = useRouter()
   const checklist = useAppSelector((state) => state.cheklistFeature.cheklist)
   const dispatch = useAppDispatch()
+  const [cheklistGroupTitle, setCheklistGroupTitle] = useState<string>('')
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit: onSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', () => supabaseClient.auth.user())
@@ -50,27 +52,26 @@ export default function Dashboard() {
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
       <main className='pt-12'>
-        <DrawerBase isOpen={isOpen} onClose={onClose} />
-        <div>
+        <DrawerBase cheklistGroupTitle={cheklistGroupTitle} isOpen={isOpen} onClose={onClose} placement='right' />
+        <Box>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
-        </div>
+        </Box>
         <div className='pt-12 pb-36'>
           {checklist.map(({ id, value }) => (
-            <InputChecklist
+            <CheklistItem
               key={id}
+              value={value}
+              onClick={onOpen}
+              className='ring-2 ring-white hover:ring-gray-300'
               CheckboxPros={{
                 colorScheme: 'twGray',
-              }}
-              InputProps={{
-                colorScheme: 'white',
-                autoComplete: 'off',
-                className: 'font-poppins cursor-default',
-                focusBorderColor: 'twGray.400',
-                pl: 12,
                 size: 'lg',
-                defaultValue: value,
-                onClick: onOpen,
+                className: 'mx-4',
+              }}
+              TextProps={{
+                className: 'font-poppins cursor-default',
+                fontSize: 'lg',
               }}
             />
           ))}
