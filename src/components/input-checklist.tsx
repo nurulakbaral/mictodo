@@ -14,7 +14,7 @@ type InputChecklistProps = BaseProps<
 export const InputChecklist = ({
   className,
   InputProps: { onBlur, ...InputProps },
-  CheckboxPros: { onChange, size, ...CheckboxProps },
+  CheckboxPros: { onChange, ...CheckboxProps },
   ...props
 }: InputChecklistProps) => {
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,9 +24,9 @@ export const InputChecklist = ({
     console.log('🪲 - e.target.value', e.target.value)
   }
   return (
-    <div className='w-5/6 mx-auto h-12 flex items-center relative mb-2' {...props}>
+    <div className={`w-full h-12 flex items-center relative ${className}`} {...props}>
       <div className='absolute z-10 mx-4 mt-1'>
-        <Checkbox onChange={handleCheckbox} size='lg' {...CheckboxProps} />
+        <Checkbox onChange={handleCheckbox} {...CheckboxProps} />
       </div>
       <Input onBlur={handleInput} {...InputProps} />
     </div>
