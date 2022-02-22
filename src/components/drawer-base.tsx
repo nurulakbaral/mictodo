@@ -16,7 +16,13 @@ import {
 
 type DrawerBaseProps = { cheklistGroupTitle: string } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 
-export const DrawerBase = ({ isOpen = false, onClose = () => {}, placement = 'right' }: DrawerBaseProps) => {
+export const DrawerBase = ({
+  cheklistGroupTitle,
+  isOpen = false,
+  onClose = () => {},
+  placement = 'right',
+}: DrawerBaseProps) => {
+  console.log('🪲 - cheklistGroupTitle', cheklistGroupTitle)
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose}>
       <DrawerOverlay />
@@ -24,7 +30,7 @@ export const DrawerBase = ({ isOpen = false, onClose = () => {}, placement = 'ri
         <Box mb={8}>
           <DrawerCloseButton className='text-gray-400' />
         </Box>
-        <DrawerHeader>Create your account</DrawerHeader>
+        <DrawerHeader>{cheklistGroupTitle}</DrawerHeader>
         <DrawerBody>
           <Input placeholder='Type here...' />
         </DrawerBody>

@@ -46,6 +46,12 @@ export default function Dashboard() {
       task: '',
     })
   }
+  const handleShowDetailCheklist = (cheklistValue: string) => {
+    return () => {
+      setCheklistGroupTitle(cheklistValue)
+      onOpen()
+    }
+  }
   return (
     <>
       <Head>
@@ -62,8 +68,8 @@ export default function Dashboard() {
             <CheklistItem
               key={id}
               value={value}
-              onClick={onOpen}
-              className='ring-2 ring-white hover:ring-gray-300'
+              onClick={handleShowDetailCheklist(value)}
+              className='ring-2 ring-white hover:ring-gray-300 mb-3'
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
