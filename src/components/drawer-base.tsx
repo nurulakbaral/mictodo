@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {
+  Divider,
   Drawer,
   DrawerProps,
   DrawerBody,
@@ -8,13 +9,22 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+  Text,
   Button,
   UseDisclosureProps,
   Box,
+  Flex,
+  Textarea,
 } from '@chakra-ui/react'
 import { InputChecklist } from '~/src/components/input-checklist'
+import { TrashIcon } from '@heroicons/react/outline'
+import { useForm } from 'react-hook-form'
+import { InputTask } from '~/src/components/input-task'
 
 type DrawerBaseProps = { cheklistGroupTitle: string } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
+type FormValues = {
+  childTask: string
+}
 
 export const DrawerBase = ({
   cheklistGroupTitle,
@@ -22,7 +32,24 @@ export const DrawerBase = ({
   onClose = () => {},
   placement = 'right',
 }: DrawerBaseProps) => {
-  console.log('🪲 - cheklistGroupTitle', cheklistGroupTitle)
+  const { register, handleSubmit: onSubmit, watch, reset } = useForm<FormValues>()
+  const [childTask, setChildTask] = React.useState<Array<string>>([''])
+  const taskValue = watch('childTask')
+  const handleSubmit = (values: FormValues) => {
+    if (values.childTask === '') {
+      alert('Please enter a childTask')
+      return
+    }
+    setChildTask((prevState) => [...prevState, values.childTask])
+    reset({
+      childTask: '',
+    })
+  }
+  const handleDeleteChildTask = (index: number) => {
+    const newState = [...childTask]
+    newState.splice(index, 1)
+    setChildTask(newState)
+  }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
       <DrawerOverlay />
@@ -32,60 +59,82 @@ export const DrawerBase = ({
         </Box>
         <DrawerHeader>Your Task</DrawerHeader>
         <DrawerBody>
-          {/* Parent */}
-          <InputChecklist
-            className='mb-6'
-            CheckboxPros={{
-              colorScheme: 'twGray',
-              size: 'lg',
-            }}
-            InputProps={{
-              colorScheme: 'white',
-              autoComplete: 'off',
-              className: 'font-poppins',
-              focusBorderColor: 'twGray.300',
-              pl: '12',
-              size: 'lg',
-              defaultValue: cheklistGroupTitle,
-            }}
-          />
+          <Box mb={6}>
+            {/* Parent */}
+            <InputChecklist
+              CheckboxPros={{
+                colorScheme: 'twGray',
+                size: 'lg',
+              }}
+              InputProps={{
+                colorScheme: 'white',
+                autoComplete: 'off',
+                className: 'font-poppins',
+                focusBorderColor: 'twGray.300',
+                pl: '12',
+                size: 'lg',
+                value: cheklistGroupTitle,
+              }}
+            />
+          </Box>
           {/* Childs */}
-          <InputChecklist
-            CheckboxPros={{
-              colorScheme: 'twGray',
-              size: 'lg',
-            }}
-            InputProps={{
-              colorScheme: 'white',
-              autoComplete: 'off',
-              className: 'font-poppins',
-              focusBorderColor: 'twGray.300',
-              pl: '12',
-              size: 'md',
-              defaultValue: 'Child Task',
-            }}
-          />
-          <InputChecklist
-            CheckboxPros={{
-              colorScheme: 'twGray',
-              size: 'lg',
-            }}
-            InputProps={{
-              colorScheme: 'white',
-              autoComplete: 'off',
-              className: 'font-poppins',
-              focusBorderColor: 'twGray.300',
-              pl: '12',
-              size: 'md',
-              defaultValue: 'Child Tasker',
-            }}
-          />
+          <Box mb={6}>
+            {childTask.map((item, index) =>
+              !item ? null : (
+                <InputChecklist
+                  key={`item-${index}`}
+                  isCloseIcon={true}
+                  onClose={() => handleDeleteChildTask(index)}
+                  CheckboxPros={{
+                    colorScheme: 'twGray',
+                    size: 'lg',
+                  }}
+                  InputProps={{
+                    colorScheme: 'white',
+                    autoComplete: 'off',
+                    className: 'font-poppins',
+                    focusBorderColor: 'twGray.300',
+                    pl: '12',
+                    size: 'md',
+                    value: item,
+                  }}
+                />
+              ),
+            )}
+            <form className='mx-auto mt-1' onSubmit={onSubmit(handleSubmit)}>
+              <InputTask
+                className='w-full'
+                value={taskValue}
+                InputProps={{
+                  colorScheme: 'white',
+                  autoComplete: 'off',
+                  className: 'font-poppins',
+                  focusBorderColor: 'twGray.400',
+                  size: 'lg',
+                  w: 'full',
+                  ...register('childTask'),
+                }}
+              />
+            </form>
+          </Box>
+          <Box>
+            <Textarea resize={'none'} placeholder='Add note' />
+          </Box>
         </DrawerBody>
+        <Divider />
         <DrawerFooter>
-          <Button variant='outline' mr={3} onClick={onClose}>
-            Cancel
-          </Button>
-          <Button colorScheme='blue'>Save</Button>
+          <Flex justifyContent={'space-between'} alignItems={'center'} w='full'>
+            <Box>
+              <Text className='text-gray-500' fontSize={'md'}>
+                Created 3 hours ago
+              </Text>
+            </Box>
+            <Box>
+              <Button colorScheme='white'>
+                <TrashIcon className='w-6 h-6 text-gray-400' />
+              </Button>
+            </Box>
+          </Flex>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
