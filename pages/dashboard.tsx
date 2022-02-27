@@ -26,8 +26,6 @@ export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', () => supabaseClient.auth.user())
-  const { data } = useQuery('checklistGroupData', () => supabaseClient.from('checklist_group').select())
-  console.log('🪲 - data', data)
   const checklistGroupValue = watch('checklistGroup')
   if (isLoading) {
     return (

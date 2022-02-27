@@ -11,11 +11,18 @@ export default function Home() {
   const router = useRouter()
   const [authorizedUser, setAuthorizedUser] = useState<Session | null | undefined>(undefined)
   // Notes: .onAuthStateChange will trigger when .signIn and .signOut are invoked (read: full reload and rendering won't invoked)
-  supabaseClient.auth.onAuthStateChange((_, session) => {
+  supabaseClient.auth.onAuthStateChange(async (_, session) => {
     // Notes: !session only indicates loading when .signOut is invoked
+    const userId = session?.user?.id
     if (!session) {
       router.reload()
       return
+    }
+    const inspectUser = await supabaseClient.from('users').select('id').eq('id', userId)
+    if (!inspectUser.data?.length) {
+      const insertUser = await supabaseClient
+        .from('users')
+        .insert([{ id: userId, full_name: session?.user?.user_metadata.name, email: session?.user?.email }])
     }
     router.push('/dashboard')
   })
