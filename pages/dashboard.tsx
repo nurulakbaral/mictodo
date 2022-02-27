@@ -41,10 +41,10 @@ export default function Dashboard() {
   const checklistGroupDB = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
     enabled: !!authorizedUser,
   })
-  const { mutate } = useMutation(insertChecklistGroup, {
+  const { mutate, data: updatedData } = useMutation(insertChecklistGroup, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
       const freshData = freshQueryData.data || []
-      queryClient.setQueryData('checklistGroup', (oldQueryData: any) => {
+      queryClient.setQueryData(['checklistGroup', authorizedUser?.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
         const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
@@ -152,7 +152,9 @@ export default function Dashboard() {
           </form>
         </Box>
         <Box>
-          <DrawerChecklist checklistGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+          {checklistGroup && (
+            <DrawerChecklist checklistGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+          )}
         </Box>
       </main>
     </>

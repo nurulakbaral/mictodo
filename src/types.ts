@@ -21,3 +21,10 @@ export type TChecklistGroupDB = {
   uncompleted_items: number
   user_id: string
 } & TDefaultDB
+export type TChecklistItemDB = {
+  title: string
+  is_completed: boolean
+  is_priority: boolean
+  description: string
+  checklist_group_id: string
+} & TDefaultDB

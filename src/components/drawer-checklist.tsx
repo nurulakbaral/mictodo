@@ -20,15 +20,33 @@ import { InputChecklist } from '~/src/components/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
-import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
+import { useAppDispatch } from '~/src/hooks/useRedux'
 import { addChecklistItem, deleteChecklistItem } from '~/src/store/features/checklist-item'
-import type { TChecklistGroupDB } from '~/src/types'
+import type { TChecklistGroupDB, TChecklistItemDB } from '~/src/types'
+import { supabaseClient } from '~/src/libs/supabase-client'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { PostgrestResponse } from '@supabase/supabase-js'
 
-type DrawerChecklistProps = { checklistGroup: TChecklistGroupDB | null | undefined } & Pick<DrawerProps, 'placement'> &
-  UseDisclosureProps
+type DrawerChecklistProps = { checklistGroup: TChecklistGroupDB } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 type FormValues = {
   checklistItem: string
 }
+
+const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) =>
+  await supabaseClient.from('checklist_item').select('*').match({ checklist_group_id: queryKey[1] })
+const insertChecklistItem = async ({
+  checklist_group_id,
+  title,
+}: Partial<Pick<TChecklistItemDB, 'checklist_group_id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistItemDB>('checklist_item').insert([
+    {
+      title,
+      is_completed: false,
+      is_priority: false,
+      description: '',
+      checklist_group_id,
+    },
+  ])
 
 export const DrawerChecklist = ({
   checklistGroup,
@@ -36,27 +54,43 @@ export const DrawerChecklist = ({
   onClose = () => {},
   placement = 'right',
 }: DrawerChecklistProps) => {
-  const checklistItem = useAppSelector((state) => state.checklistItem.checklistItemData)
+  const queryClient = useQueryClient()
+  const checklisItem = useQuery(['checklistItem', checklistGroup.id], selectChecklistItem)
+  const { mutate } = useMutation(insertChecklistItem, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
+      const freshData = freshQueryData.data || []
+      queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistItemDB> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        return {
+          ...oldData,
+          data: [...oldData, ...freshData],
+        }
+      })
+    },
+  })
   const dispatch = useAppDispatch()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const taskValue = watch('checklistItem')
-  const handleAddChecklistItem = (values: FormValues) => {
+  const handleAddChecklistItem = async (values: FormValues) => {
     if (values.checklistItem === '') {
       alert('Please enter a checklistItem')
       return
     }
     // Notes: Add state (checklist item) to store
     if (checklistGroup) {
-      dispatch(addChecklistItem({ checklistGroupId: checklistGroup.id, value: values.checklistItem }))
+      mutate({ checklist_group_id: checklistGroup.id, title: values.checklistItem })
     }
     reset({
       checklistItem: '',
     })
   }
   const handleDeleteChecklistItem = (checklisItemId: string) => {
-    if (checklistGroup) {
-      dispatch(deleteChecklistItem({ id: checklisItemId, checklistGroupId: checklistGroup.id }))
-    }
+    // if (checklistGroup) {
+    //   dispatch(deleteChecklistItem({ id: checklisItemId, checklistGroupId: checklistGroup.id }))
+    // }
+    console.log('🪲 - delete checklistItem')
   }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
@@ -81,14 +115,14 @@ export const DrawerChecklist = ({
                 focusBorderColor: 'twGray.300',
                 pl: '12',
                 size: 'lg',
-                value: checklistGroup?.title,
+                value: checklistGroup.title,
               }}
             />
           </Box>
           {/* Childs */}
           <Box mb={6}>
             {checklistGroup &&
-              checklistItem[checklistGroup.id]?.map(({ id, value }) => (
+              checklisItem?.data?.data?.map(({ id, title }) => (
                 <InputChecklist
                   key={`item-${id}`}
                   isCloseIcon={true}
@@ -104,7 +138,7 @@ export const DrawerChecklist = ({
                     focusBorderColor: 'twGray.300',
                     pl: '12',
                     size: 'md',
-                    value: value,
+                    value: title,
                   }}
                 />
               ))}
