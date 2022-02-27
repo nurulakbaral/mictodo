@@ -7,26 +7,28 @@ import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
-import { addCheklistGroup } from '~/src/store/features/cheklist-group'
-import { DrawerCheklist } from '~/src/components/drawer-cheklist'
+import { addChecklistGroup } from '~/src/store/features/checklist-group'
+import { DrawerChecklist } from '~/src/components/drawer-checklist'
 import { useDisclosure, Box, Text } from '@chakra-ui/react'
-import { CheklistItem } from '~/src/components/cheklist-item'
-import type { TCheklistGroup } from '~/src/store/features/cheklist-group'
+import { ChecklistItem } from '~/src/components/checklist-item'
+import type { TChecklistGroup } from '~/src/store/features/checklist-group'
 import { ButtonBase } from '~/src/components/button-base'
 
 type FormValues = {
-  cheklistGroup: string
+  checklistGroup: string
 }
 
 export default function Dashboard() {
   const router = useRouter()
-  const checklistGroupData = useAppSelector((state) => state.cheklistGroup.cheklistGroupData)
+  const checklistGroupData = useAppSelector((state) => state.checklistGroup.checklistGroupData)
   const dispatch = useAppDispatch()
-  const [cheklistGroup, setCheklistGroup] = useState<TCheklistGroup | null | undefined>(null)
+  const [checklistGroup, setChecklistGroup] = useState<TChecklistGroup | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', () => supabaseClient.auth.user())
-  const cheklistGroupValue = watch('cheklistGroup')
+  const { data } = useQuery('checklistGroupData', () => supabaseClient.from('checklist_group').select())
+  console.log('🪲 - data', data)
+  const checklistGroupValue = watch('checklistGroup')
   if (isLoading) {
     return (
       <div className='pt-40'>
@@ -37,19 +39,19 @@ export default function Dashboard() {
   if (isError) {
     return router.push('/404')
   }
-  const handleAddCheklistGroup = (values: FormValues) => {
-    if (values.cheklistGroup === '') {
+  const handleAddChecklistGroup = (values: FormValues) => {
+    if (values.checklistGroup === '') {
       alert('Please enter a task')
       return
     }
-    dispatch(addCheklistGroup(values.cheklistGroup))
+    dispatch(addChecklistGroup(values.checklistGroup))
     reset({
-      cheklistGroup: '',
+      checklistGroup: '',
     })
   }
-  const handleShowDetailCheklist = (checklistGroup: TCheklistGroup) => {
+  const handleShowDetailChecklist = (checklistGroup: TChecklistGroup) => {
     return () => {
-      setCheklistGroup(checklistGroup)
+      setChecklistGroup(checklistGroup)
       onOpen()
     }
   }
@@ -90,10 +92,10 @@ export default function Dashboard() {
         </Box>
         <Box className='pt-12 pb-36'>
           {checklistGroupData.map((checklistGroup) => (
-            <CheklistItem
+            <ChecklistItem
               key={checklistGroup.id}
               value={checklistGroup.value}
-              onClick={handleShowDetailCheklist(checklistGroup)}
+              onClick={handleShowDetailChecklist(checklistGroup)}
               className='ring-2 ring-white hover:ring-gray-300 mb-3'
               CheckboxPros={{
                 colorScheme: 'twGray',
@@ -108,22 +110,22 @@ export default function Dashboard() {
           ))}
         </Box>
         <Box className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
-          <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={handleSubmit(handleAddCheklistGroup)}>
+          <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={handleSubmit(handleAddChecklistGroup)}>
             <InputTask
-              value={cheklistGroupValue}
+              value={checklistGroupValue}
               InputProps={{
                 colorScheme: 'white',
                 autoComplete: 'off',
                 className: 'font-poppins',
                 focusBorderColor: 'twGray.400',
                 size: 'lg',
-                ...register('cheklistGroup'),
+                ...register('checklistGroup'),
               }}
             />
           </form>
         </Box>
         <Box>
-          <DrawerCheklist cheklistGroup={cheklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+          <DrawerChecklist checklistGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
         </Box>
       </main>
     </>

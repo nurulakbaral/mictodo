@@ -21,41 +21,41 @@ import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
-import type { TCheklistGroup } from '~/src/store/features/cheklist-group'
-import { addCheklistItem, deleteCheklistItem } from '~/src/store/features/cheklist-item'
+import type { TChecklistGroup } from '~/src/store/features/checklist-group'
+import { addChecklistItem, deleteChecklistItem } from '~/src/store/features/checklist-item'
 
-type DrawerCheklistProps = { cheklistGroup: TCheklistGroup | null | undefined } & Pick<DrawerProps, 'placement'> &
+type DrawerChecklistProps = { checklistGroup: TChecklistGroup | null | undefined } & Pick<DrawerProps, 'placement'> &
   UseDisclosureProps
 type FormValues = {
-  cheklistItem: string
+  checklistItem: string
 }
 
-export const DrawerCheklist = ({
-  cheklistGroup,
+export const DrawerChecklist = ({
+  checklistGroup,
   isOpen = false,
   onClose = () => {},
   placement = 'right',
-}: DrawerCheklistProps) => {
-  const checklistItem = useAppSelector((state) => state.cheklistItem.cheklistItemData)
+}: DrawerChecklistProps) => {
+  const checklistItem = useAppSelector((state) => state.checklistItem.checklistItemData)
   const dispatch = useAppDispatch()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const taskValue = watch('cheklistItem')
-  const handleAddCheklistItem = (values: FormValues) => {
-    if (values.cheklistItem === '') {
-      alert('Please enter a cheklistItem')
+  const taskValue = watch('checklistItem')
+  const handleAddChecklistItem = (values: FormValues) => {
+    if (values.checklistItem === '') {
+      alert('Please enter a checklistItem')
       return
     }
-    // Notes: Add state (cheklist item) to store
-    if (cheklistGroup) {
-      dispatch(addCheklistItem({ cheklistGroupId: cheklistGroup.id, value: values.cheklistItem }))
+    // Notes: Add state (checklist item) to store
+    if (checklistGroup) {
+      dispatch(addChecklistItem({ checklistGroupId: checklistGroup.id, value: values.checklistItem }))
     }
     reset({
-      cheklistItem: '',
+      checklistItem: '',
     })
   }
-  const handleDeleteCheklistItem = (cheklisItemId: string) => {
-    if (cheklistGroup) {
-      dispatch(deleteCheklistItem({ id: cheklisItemId, cheklistGroupId: cheklistGroup.id }))
+  const handleDeleteChecklistItem = (checklisItemId: string) => {
+    if (checklistGroup) {
+      dispatch(deleteChecklistItem({ id: checklisItemId, checklistGroupId: checklistGroup.id }))
     }
   }
   return (
@@ -81,18 +81,18 @@ export const DrawerCheklist = ({
                 focusBorderColor: 'twGray.300',
                 pl: '12',
                 size: 'lg',
-                value: cheklistGroup?.value,
+                value: checklistGroup?.value,
               }}
             />
           </Box>
           {/* Childs */}
           <Box mb={6}>
-            {cheklistGroup &&
-              checklistItem[cheklistGroup.id]?.map(({ id, value }) => (
+            {checklistGroup &&
+              checklistItem[checklistGroup.id]?.map(({ id, value }) => (
                 <InputChecklist
                   key={`item-${id}`}
                   isCloseIcon={true}
-                  onClose={() => handleDeleteCheklistItem(id)}
+                  onClose={() => handleDeleteChecklistItem(id)}
                   CheckboxPros={{
                     colorScheme: 'twGray',
                     size: 'lg',
@@ -108,7 +108,7 @@ export const DrawerCheklist = ({
                   }}
                 />
               ))}
-            <form className='mx-auto mt-1' onSubmit={handleSubmit(handleAddCheklistItem)}>
+            <form className='mx-auto mt-1' onSubmit={handleSubmit(handleAddChecklistItem)}>
               <InputTask
                 className='w-full'
                 value={taskValue}
@@ -119,7 +119,7 @@ export const DrawerCheklist = ({
                   focusBorderColor: 'twGray.400',
                   size: 'lg',
                   w: 'full',
-                  ...register('cheklistItem'),
+                  ...register('checklistItem'),
                 }}
               />
             </form>
