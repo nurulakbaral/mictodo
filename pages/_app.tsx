@@ -21,7 +21,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             </LayoutContainer>
           </Layout>
         </ChakraProvider>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </Provider>
     </QueryClientProvider>
   )

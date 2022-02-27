@@ -21,10 +21,10 @@ import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
-import type { TChecklistGroup } from '~/src/store/features/checklist-group'
 import { addChecklistItem, deleteChecklistItem } from '~/src/store/features/checklist-item'
+import type { TChecklistGroupDB } from '~/src/types'
 
-type DrawerChecklistProps = { checklistGroup: TChecklistGroup | null | undefined } & Pick<DrawerProps, 'placement'> &
+type DrawerChecklistProps = { checklistGroup: TChecklistGroupDB | null | undefined } & Pick<DrawerProps, 'placement'> &
   UseDisclosureProps
 type FormValues = {
   checklistItem: string
@@ -81,7 +81,7 @@ export const DrawerChecklist = ({
                 focusBorderColor: 'twGray.300',
                 pl: '12',
                 size: 'lg',
-                value: checklistGroup?.value,
+                value: checklistGroup?.title,
               }}
             />
           </Box>
