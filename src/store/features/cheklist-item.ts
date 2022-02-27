@@ -16,7 +16,7 @@ const cheklistItemSlice = createSlice({
   initialState,
   reducers: {
     addCheklistItem: (state, action: { type: string; payload: Omit<TCheklistItem, 'id'> }) => {
-      const { cheklistGroupId, value } = action.payload
+      const { value, cheklistGroupId } = action.payload
       if (!state.cheklistItemData[cheklistGroupId]) {
         state.cheklistItemData[cheklistGroupId] = []
       }
@@ -25,11 +25,15 @@ const cheklistItemSlice = createSlice({
         { id: uuidv4(), value, cheklistGroupId },
       ]
     },
+    deleteCheklistItem(state, action: { type: string; payload: Omit<TCheklistItem, 'value'> }) {
+      const { id, cheklistGroupId } = action.payload
+      state.cheklistItemData[cheklistGroupId] = state.cheklistItemData[cheklistGroupId].filter((item) => item.id !== id)
+    },
   },
 })
 const {
-  actions: { addCheklistItem },
+  actions: { addCheklistItem, deleteCheklistItem },
   reducer: cheklistItemReducer,
 } = cheklistItemSlice
 
-export { addCheklistItem, cheklistItemReducer }
+export { cheklistItemReducer, addCheklistItem, deleteCheklistItem }

@@ -22,7 +22,7 @@ import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
 import type { TCheklistGroup } from '~/src/store/features/cheklist-group'
-import { addCheklistItem } from '~/src/store/features/cheklist-item'
+import { addCheklistItem, deleteCheklistItem } from '~/src/store/features/cheklist-item'
 
 type DrawerCheklistProps = { cheklistGroup: TCheklistGroup | null | undefined } & Pick<DrawerProps, 'placement'> &
   UseDisclosureProps
@@ -38,12 +38,7 @@ export const DrawerCheklist = ({
 }: DrawerCheklistProps) => {
   const checklistItem = useAppSelector((state) => state.cheklistItem.cheklistItemData)
   const dispatch = useAppDispatch()
-  if (cheklistGroup) {
-    // console.log('🪲 - checklistItem', checklistItem[cheklistGroup?.id])
-  }
-  // console.log('🪲 - cheklistGroup', cheklistGroup)
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const [cheklistItem, setCheklistItem] = React.useState<Array<string>>([''])
   const taskValue = watch('cheklistItem')
   const handleAddCheklistItem = (values: FormValues) => {
     if (values.cheklistItem === '') {
@@ -51,7 +46,6 @@ export const DrawerCheklist = ({
       return
     }
     // Notes: Add state (cheklist item) to store
-    setCheklistItem((prevState) => [...prevState, values.cheklistItem])
     if (cheklistGroup) {
       dispatch(addCheklistItem({ cheklistGroupId: cheklistGroup.id, value: values.cheklistItem }))
     }
@@ -59,10 +53,10 @@ export const DrawerCheklist = ({
       cheklistItem: '',
     })
   }
-  const handleDeleteChildTask = (index: number) => {
-    const newState = [...cheklistItem]
-    newState.splice(index, 1)
-    setCheklistItem(newState)
+  const handleDeleteCheklistItem = (cheklisItemId: string) => {
+    if (cheklistGroup) {
+      dispatch(deleteCheklistItem({ id: cheklisItemId, cheklistGroupId: cheklistGroup.id }))
+    }
   }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
@@ -94,28 +88,26 @@ export const DrawerCheklist = ({
           {/* Childs */}
           <Box mb={6}>
             {cheklistGroup &&
-              checklistItem[cheklistGroup.id]?.map((item, index) =>
-                !item ? null : (
-                  <InputChecklist
-                    key={`item-${index}`}
-                    isCloseIcon={true}
-                    onClose={() => handleDeleteChildTask(index)}
-                    CheckboxPros={{
-                      colorScheme: 'twGray',
-                      size: 'lg',
-                    }}
-                    InputProps={{
-                      colorScheme: 'white',
-                      autoComplete: 'off',
-                      className: 'font-poppins',
-                      focusBorderColor: 'twGray.300',
-                      pl: '12',
-                      size: 'md',
-                      value: item.value,
-                    }}
-                  />
-                ),
-              )}
+              checklistItem[cheklistGroup.id]?.map(({ id, value }) => (
+                <InputChecklist
+                  key={`item-${id}`}
+                  isCloseIcon={true}
+                  onClose={() => handleDeleteCheklistItem(id)}
+                  CheckboxPros={{
+                    colorScheme: 'twGray',
+                    size: 'lg',
+                  }}
+                  InputProps={{
+                    colorScheme: 'white',
+                    autoComplete: 'off',
+                    className: 'font-poppins',
+                    focusBorderColor: 'twGray.300',
+                    pl: '12',
+                    size: 'md',
+                    value: value,
+                  }}
+                />
+              ))}
             <form className='mx-auto mt-1' onSubmit={handleSubmit(handleAddCheklistItem)}>
               <InputTask
                 className='w-full'
