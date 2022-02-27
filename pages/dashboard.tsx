@@ -7,7 +7,7 @@ import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
-import { addCheklist } from '~/src/store/features/cheklist'
+import { addCheklistGroupData } from '~/src/store/features/cheklist-group'
 import { DrawerBase } from '~/src/components/drawer-base'
 import { useDisclosure, Box } from '@chakra-ui/react'
 import { CheklistItem } from '~/src/components/cheklist-item'
@@ -18,7 +18,7 @@ type FormValues = {
 
 export default function Dashboard() {
   const router = useRouter()
-  const checklist = useAppSelector((state) => state.cheklistFeature.cheklist)
+  const checklist = useAppSelector((state) => state.cheklistGroup.cheklistGroupData)
   const dispatch = useAppDispatch()
   const [cheklistGroupTitle, setCheklistGroupTitle] = useState<string>('')
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -40,7 +40,7 @@ export default function Dashboard() {
       alert('Please enter a task')
       return
     }
-    dispatch(addCheklist(values.task))
+    dispatch(addCheklistGroupData(values.task))
     reset({
       task: '',
     })
