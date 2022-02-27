@@ -94,7 +94,7 @@ export const DrawerCheklist = ({
           {/* Childs */}
           <Box mb={6}>
             {cheklistGroup &&
-              checklistItem[cheklistGroup.id].map((item, index) =>
+              checklistItem[cheklistGroup.id]?.map((item, index) =>
                 !item ? null : (
                   <InputChecklist
                     key={`item-${index}`}
