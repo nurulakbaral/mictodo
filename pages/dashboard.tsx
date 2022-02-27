@@ -9,9 +9,10 @@ import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
 import { addCheklistGroup } from '~/src/store/features/cheklist-group'
 import { DrawerCheklist } from '~/src/components/drawer-cheklist'
-import { useDisclosure, Box } from '@chakra-ui/react'
+import { useDisclosure, Box, Text } from '@chakra-ui/react'
 import { CheklistItem } from '~/src/components/cheklist-item'
 import type { TCheklistGroup } from '~/src/store/features/cheklist-group'
+import { ButtonBase } from '~/src/components/button-base'
 
 type FormValues = {
   cheklistGroup: string
@@ -52,18 +53,42 @@ export default function Dashboard() {
       onOpen()
     }
   }
+  const handleRedirectToHome = () => {
+    router.replace('/')
+  }
+  if (!authorizedUser) {
+    return (
+      <>
+        <Head>
+          <title>Mictodo - Login</title>
+        </Head>
+        <main className='pt-12'>
+          <Box mt={32}>
+            <Text textAlign={'center'}>You dont have access yet, please login first with a google account.</Text>
+          </Box>
+          <Box textAlign={'center'} display={'flex'} justifyContent={'center'} mt={12}>
+            <ButtonBase
+              onClick={handleRedirectToHome}
+              className='py-3 px-6 rounded-md flex justify-center items-center font-medium font-poppins'
+            >
+              Back to Home
+            </ButtonBase>
+          </Box>
+        </main>
+      </>
+    )
+  }
   return (
     <>
       <Head>
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
       <main className='pt-12'>
-        <DrawerCheklist cheklistGroup={cheklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
         <Box>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
-        <div className='pt-12 pb-36'>
+        <Box className='pt-12 pb-36'>
           {checklistGroupData.map((checklistGroup) => (
             <CheklistItem
               key={checklistGroup.id}
@@ -81,8 +106,8 @@ export default function Dashboard() {
               }}
             />
           ))}
-        </div>
-        <div className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
+        </Box>
+        <Box className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
           <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={handleSubmit(handleAddCheklistGroup)}>
             <InputTask
               value={cheklistGroupValue}
@@ -96,7 +121,10 @@ export default function Dashboard() {
               }}
             />
           </form>
-        </div>
+        </Box>
+        <Box>
+          <DrawerCheklist cheklistGroup={cheklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+        </Box>
       </main>
     </>
   )
