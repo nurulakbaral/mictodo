@@ -1,25 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { v4 as uuidv4 } from 'uuid'
 
-type TCheklistGroup<T> = {
+type TCheklistGroupData<T> = {
   cheklistGroupData: Array<T>
 }
+export type TCheklistGroup = { id: string; value: string }
 
-const initialState: TCheklistGroup<{ id: string; value: string }> = {
+const initialState: TCheklistGroupData<TCheklistGroup> = {
   cheklistGroupData: [],
 }
 const cheklistGroupSlice = createSlice({
   name: 'cheklistGroup',
   initialState,
   reducers: {
-    addCheklistGroupData: (state, action) => {
+    addCheklistGroup: (state, action) => {
       state.cheklistGroupData = [...state.cheklistGroupData, { id: uuidv4(), value: action.payload }]
     },
   },
 })
 const {
-  actions: { addCheklistGroupData },
+  actions: { addCheklistGroup },
   reducer: cheklistGroupReducer,
 } = cheklistGroupSlice
 
-export { addCheklistGroupData, cheklistGroupReducer }
+export { addCheklistGroup, cheklistGroupReducer }

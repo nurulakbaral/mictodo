@@ -7,24 +7,25 @@ import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { useAppDispatch, useAppSelector } from '~/src/hooks/useRedux'
-import { addCheklistGroupData } from '~/src/store/features/cheklist-group'
-import { DrawerBase } from '~/src/components/drawer-base'
+import { addCheklistGroup } from '~/src/store/features/cheklist-group'
+import { DrawerCheklist } from '~/src/components/drawer-cheklist'
 import { useDisclosure, Box } from '@chakra-ui/react'
 import { CheklistItem } from '~/src/components/cheklist-item'
+import type { TCheklistGroup } from '~/src/store/features/cheklist-group'
 
 type FormValues = {
-  task: string
+  cheklistGroup: string
 }
 
 export default function Dashboard() {
   const router = useRouter()
-  const checklist = useAppSelector((state) => state.cheklistGroup.cheklistGroupData)
+  const checklistGroupData = useAppSelector((state) => state.cheklistGroup.cheklistGroupData)
   const dispatch = useAppDispatch()
-  const [cheklistGroupTitle, setCheklistGroupTitle] = useState<string>('')
+  const [cheklistGroup, setCheklistGroup] = useState<TCheklistGroup | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { register, handleSubmit: onSubmit, watch, reset } = useForm<FormValues>()
+  const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', () => supabaseClient.auth.user())
-  const taskValue = watch('task')
+  const cheklistGroupValue = watch('cheklistGroup')
   if (isLoading) {
     return (
       <div className='pt-40'>
@@ -35,19 +36,19 @@ export default function Dashboard() {
   if (isError) {
     return router.push('/404')
   }
-  const handleSubmit = (values: FormValues) => {
-    if (values.task === '') {
+  const handleAddCheklistGroup = (values: FormValues) => {
+    if (values.cheklistGroup === '') {
       alert('Please enter a task')
       return
     }
-    dispatch(addCheklistGroupData(values.task))
+    dispatch(addCheklistGroup(values.cheklistGroup))
     reset({
-      task: '',
+      cheklistGroup: '',
     })
   }
-  const handleShowDetailCheklist = (cheklistValue: string) => {
+  const handleShowDetailCheklist = (checklistGroup: TCheklistGroup) => {
     return () => {
-      setCheklistGroupTitle(cheklistValue)
+      setCheklistGroup(checklistGroup)
       onOpen()
     }
   }
@@ -57,17 +58,17 @@ export default function Dashboard() {
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
       <main className='pt-12'>
-        <DrawerBase cheklistGroupTitle={cheklistGroupTitle} isOpen={isOpen} onClose={onClose} placement='right' />
+        <DrawerCheklist cheklistGroup={cheklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
         <Box>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <div className='pt-12 pb-36'>
-          {checklist.map(({ id, value }) => (
+          {checklistGroupData.map((checklistGroup) => (
             <CheklistItem
-              key={id}
-              value={value}
-              onClick={handleShowDetailCheklist(value)}
+              key={checklistGroup.id}
+              value={checklistGroup.value}
+              onClick={handleShowDetailCheklist(checklistGroup)}
               className='ring-2 ring-white hover:ring-gray-300 mb-3'
               CheckboxPros={{
                 colorScheme: 'twGray',
@@ -82,16 +83,16 @@ export default function Dashboard() {
           ))}
         </div>
         <div className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
-          <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={onSubmit(handleSubmit)}>
+          <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={handleSubmit(handleAddCheklistGroup)}>
             <InputTask
-              value={taskValue}
+              value={cheklistGroupValue}
               InputProps={{
                 colorScheme: 'white',
                 autoComplete: 'off',
                 className: 'font-poppins',
                 focusBorderColor: 'twGray.400',
                 size: 'lg',
-                ...register('task'),
+                ...register('cheklistGroup'),
               }}
             />
           </form>
