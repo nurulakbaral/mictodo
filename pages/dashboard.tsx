@@ -17,50 +17,44 @@ type FormValues = {
   checklistGroup: string
 }
 
+const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistGroupDB, 'user_id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistGroupDB>('checklist_group').insert([
+    {
+      title,
+      number_of_items: 0,
+      completed_items: 0,
+      uncompleted_items: 0,
+      user_id,
+    },
+  ])
+const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) =>
+  await supabaseClient.from('checklist_group').select('*').eq('user_id', queryKey[1])
+const selectAuthorizedUser = async () => await supabaseClient.auth.user()
+
 export default function Dashboard() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupDB | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const {
-    data: authorizedUser,
-    isLoading: isLoadingUser,
-    isError,
-  } = useQuery('authorizedUser', () => supabaseClient.auth.user())
-  const checklistGroupDB = useQuery(
-    'checklistGroup',
-    async () => await supabaseClient.from('checklist_group').select('*').eq('user_id', authorizedUser?.id),
-    {
-      enabled: !!authorizedUser,
+  const { data: authorizedUser, isLoading: isLoadingUser, isError } = useQuery('authorizedUser', selectAuthorizedUser)
+  const checklistGroupDB = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
+    enabled: !!authorizedUser,
+  })
+  const { mutate } = useMutation(insertChecklistGroup, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
+      const freshData = freshQueryData.data || []
+      queryClient.setQueryData('checklistGroup', (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        return {
+          ...oldData,
+          data: [...oldData, ...freshData],
+        }
+      })
     },
-  )
-  const { mutate } = useMutation(
-    async ({ user_id, title }: Partial<Pick<TChecklistGroupDB, 'user_id' | 'title'>>) =>
-      await supabaseClient.from<TChecklistGroupDB>('checklist_group').insert([
-        {
-          title,
-          number_of_items: 0,
-          completed_items: 0,
-          uncompleted_items: 0,
-          user_id,
-        },
-      ]),
-    {
-      onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
-        const freshData = freshQueryData.data || []
-        queryClient.setQueryData('checklistGroup', (oldQueryData: any) => {
-          // Notes: $oldQueryData variable is only used to get type oldQueryData
-          const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
-          const oldData = $oldQueryData.data || []
-          return {
-            ...oldData,
-            data: [...oldData, ...freshData],
-          }
-        })
-      },
-    },
-  )
+  })
   const checklistGroupValue = watch('checklistGroup')
   if (isLoadingUser || checklistGroupDB.isLoading) {
     return (
