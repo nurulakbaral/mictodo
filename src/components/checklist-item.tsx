@@ -12,7 +12,7 @@ type InputChecklistProps = BaseProps<
 > &
   BoxProps
 
-export const CheklistItem = ({
+export const ChecklistItem = ({
   className,
   value = 'Baca buku 10 menit',
   onClick,

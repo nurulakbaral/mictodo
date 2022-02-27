@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { cheklistReducer } from './features/cheklist'
+import { checklistGroupReducer } from '~/src/store/features/checklist-group'
+import { checklistItemReducer } from '~/src/store/features/checklist-item'
 
 export const store = configureStore({
   reducer: {
-    cheklistFeature: cheklistReducer,
+    checklistGroup: checklistGroupReducer,
+    checklistItem: checklistItemReducer,
   },
 })
 
