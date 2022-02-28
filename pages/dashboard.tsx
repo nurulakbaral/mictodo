@@ -152,6 +152,7 @@ export default function Dashboard() {
         <Box className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
           <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={handleSubmit(handleAddChecklistGroup)}>
             <InputTask
+              variant='Add Group-Task'
               value={checklistGroupValue}
               InputProps={{
                 colorScheme: 'white',

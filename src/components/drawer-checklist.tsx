@@ -75,11 +75,13 @@ const deleteChecklistItem = async ({ id }: Partial<Pick<TChecklistItemEntity, 'i
 }
 
 // Notes: Checklist Group Fetch
-const updateChecklistGroup = async ({ id, title }: Partial<Pick<TChecklistGroupEntity, 'id' | 'title'>>) => {
-  const response = await supabaseClient
-    .from<TChecklistGroupEntity>('$DB_checklist_group')
-    .update({ title })
-    .match({ id })
+const updateChecklistGroup = async ({
+  id,
+  title,
+  description,
+}: Pick<TChecklistGroupEntity, 'id' | 'title' | 'description'>) => {
+  const entity = !description ? { title } : { description }
+  const response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').update(entity).match({ id })
   if (response.error) {
     throw new Error(response.error.message)
   }
@@ -242,7 +244,7 @@ export const DrawerChecklist = ({
     mutateForDeleteCI({ id: checklisItemId })
   }
   const handleUpdateChecklistGroup = (title: string) => {
-    mutateForUpdateCG({ id: checklistGroup.id, title })
+    mutateForUpdateCG({ id: checklistGroup.id, title, description: '' })
   }
   const handleUpdateChecklistItem = (id: string) => {
     return (title: string) => {
@@ -253,14 +255,34 @@ export const DrawerChecklist = ({
     mutateForDeleteCG({ id: checklistGroup.id })
     onClose()
   }
+  const handleAddCGDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const description = e.target.value
+    mutateForUpdateCG({
+      id: checklistGroup.id,
+      title: '',
+      description,
+    })
+  }
+  const handleAddCGDescriptionWithEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const description = e.currentTarget.value
+    if (e.key === 'Enter') {
+      mutateForUpdateCG({
+        id: checklistGroup.id,
+        title: '',
+        description,
+      })
+    }
+  }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
       <DrawerOverlay />
       <DrawerContent>
-        <Box mb={8}>
+        <Box>
           <DrawerCloseButton className='text-gray-400' />
         </Box>
-        <DrawerHeader>Hello World :)</DrawerHeader>
+        <DrawerHeader mt={10} mb={2}>
+          <Divider />
+        </DrawerHeader>
         <DrawerBody>
           <Box mb={6}>
             {/* Parent */}
@@ -315,6 +337,7 @@ export const DrawerChecklist = ({
               ))}
             <form className='mx-auto mt-1' onSubmit={handleSubmit(handleAddChecklistItem)}>
               <InputTask
+                variant='Add Item-Task'
                 className='w-full'
                 value={taskValue}
                 InputProps={{
@@ -330,7 +353,13 @@ export const DrawerChecklist = ({
             </form>
           </Box>
           <Box>
-            <Textarea resize={'none'} placeholder='Add note' />
+            <Textarea
+              onKeyPress={handleAddCGDescriptionWithEnter}
+              onBlur={handleAddCGDescription}
+              defaultValue={checklistGroup.description}
+              resize={'none'}
+              placeholder='Add note'
+            />
           </Box>
         </DrawerBody>
         <Divider />
