@@ -15,38 +15,85 @@ import {
   Box,
   Flex,
   Textarea,
+  useToast,
 } from '@chakra-ui/react'
 import { InputChecklist } from '~/src/components/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
-import { useAppDispatch } from '~/src/hooks/useRedux'
-import { addChecklistItem, deleteChecklistItem } from '~/src/store/features/checklist-item'
-import type { TChecklistGroupDB, TChecklistItemDB } from '~/src/types'
+import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { PostgrestResponse } from '@supabase/supabase-js'
 
-type DrawerChecklistProps = { checklistGroup: TChecklistGroupDB } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
+type DrawerChecklistProps = { checklistGroup: TChecklistGroupEntity } & Pick<DrawerProps, 'placement'> &
+  UseDisclosureProps
 type FormValues = {
   checklistItem: string
 }
 
-const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) =>
-  await supabaseClient.from('checklist_item').select('*').match({ checklist_group_id: queryKey[1] })
+// Notes: Checklist Item Fetch
+const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) => {
+  const response = await supabaseClient
+    .from('$DB_checklist_item')
+    .select('*')
+    .match({ checklist_group_id: queryKey[1] })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 const insertChecklistItem = async ({
   checklist_group_id,
   title,
-}: Partial<Pick<TChecklistItemDB, 'checklist_group_id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistItemDB>('checklist_item').insert([
+}: Partial<Pick<TChecklistItemEntity, 'checklist_group_id' | 'title'>>) => {
+  const response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').insert([
     {
       title,
       is_completed: false,
-      is_priority: false,
-      description: '',
       checklist_group_id,
     },
   ])
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+const updateChecklistItem = async ({ id, title }: Partial<Pick<TChecklistItemEntity, 'id' | 'title'>>) => {
+  const response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').update({ title }).match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+const deleteChecklistItem = async ({ id }: Partial<Pick<TChecklistItemEntity, 'id'>>) => {
+  const response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').delete().match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+
+// Notes: Checklist Group Fetch
+const updateChecklistGroup = async ({
+  id,
+  title,
+  description,
+}: Pick<TChecklistGroupEntity, 'id' | 'title' | 'description'>) => {
+  const entity = !description ? { title } : { description }
+  const response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').update(entity).match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+const deleteChecklistGroup = async ({ id }: Partial<Pick<TChecklistGroupEntity, 'id'>>) => {
+  const response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').delete().match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 
 export const DrawerChecklist = ({
   checklistGroup,
@@ -54,59 +101,200 @@ export const DrawerChecklist = ({
   onClose = () => {},
   placement = 'right',
 }: DrawerChecklistProps) => {
+  const renderToastComponent = useToast()
+  const { register, handleSubmit, watch, reset } = useForm<FormValues>()
+  const taskValue = watch('checklistItem')
+  // Notes: Get Checklist Items
   const queryClient = useQueryClient()
   const checklisItem = useQuery(['checklistItem', checklistGroup.id], selectChecklistItem)
-  const { mutate } = useMutation(insertChecklistItem, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
-      const freshData = freshQueryData.data || []
+  // Notes: Insert Checklist Items
+  const { mutate: mutateForInsertCI } = useMutation(insertChecklistItem, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
+      renderToastComponent({
+        title: 'Item-Task created.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistItemDB> = { ...oldQueryData }
+        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
         return {
-          ...oldData,
-          data: [...oldData, ...freshData],
+          ...$oldQueryData,
+          data: [...oldData, freshData],
         }
       })
     },
   })
-  const dispatch = useAppDispatch()
-  const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const taskValue = watch('checklistItem')
+  // Notes: Update Checklist Items
+  const { mutate: mutateForUpdateCI } = useMutation(updateChecklistItem, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
+      renderToastComponent({
+        title: 'Item-Task updated.',
+        status: 'success',
+        duration: 800,
+        isClosable: true,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistItemEntity) => (old.id === freshData.id ? freshData : old)
+        return {
+          ...$oldQueryData,
+          data: oldData.map(updateOldData),
+        }
+      })
+    },
+  })
+  // Notes: Update Checklist Group
+  const { mutate: mutateForUpdateCG } = useMutation(updateChecklistGroup, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
+      renderToastComponent({
+        title: 'Group-Task updated.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistGroup', checklistGroup.user_id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistGroupEntity) => (old.id === freshData.id ? freshData : old)
+        return {
+          ...$oldQueryData,
+          data: oldData.map(updateOldData),
+        }
+      })
+    },
+  })
+  // Notes: Delete Checklist Group
+  const { mutate: mutateForDeleteCG } = useMutation(deleteChecklistGroup, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
+      renderToastComponent({
+        title: 'Group-Task deleted.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistGroup', checklistGroup.user_id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistGroupEntity) => old.id !== freshData.id
+        return {
+          ...$oldQueryData,
+          data: oldData.filter(updateOldData),
+        }
+      })
+    },
+    onError: () => {
+      renderToastComponent({
+        title: 'Failed to delete Group-Task!',
+        description: 'Delete the Item-Task, then try again to delete the Group-Task.',
+        status: 'error',
+        duration: null,
+        isClosable: true,
+        position: 'top',
+      })
+    },
+  })
+  // Notes: Delete Checklist Items
+  const { mutate: mutateForDeleteCI } = useMutation(deleteChecklistItem, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
+      renderToastComponent({
+        title: 'Item-Task deleted.',
+        status: 'success',
+        duration: 800,
+        isClosable: true,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistItemEntity) => old.id !== freshData.id
+        return {
+          ...$oldQueryData,
+          data: oldData.filter(updateOldData),
+        }
+      })
+    },
+  })
   const handleAddChecklistItem = async (values: FormValues) => {
     if (values.checklistItem === '') {
       alert('Please enter a checklistItem')
       return
     }
-    // Notes: Add state (checklist item) to store
     if (checklistGroup) {
-      mutate({ checklist_group_id: checklistGroup.id, title: values.checklistItem })
+      mutateForInsertCI({ checklist_group_id: checklistGroup.id, title: values.checklistItem })
     }
     reset({
       checklistItem: '',
     })
   }
   const handleDeleteChecklistItem = (checklisItemId: string) => {
-    // if (checklistGroup) {
-    //   dispatch(deleteChecklistItem({ id: checklisItemId, checklistGroupId: checklistGroup.id }))
-    // }
-    console.log('🪲 - delete checklistItem')
+    mutateForDeleteCI({ id: checklisItemId })
+  }
+  const handleUpdateChecklistGroup = (title: string) => {
+    mutateForUpdateCG({ id: checklistGroup.id, title, description: '' })
+  }
+  const handleUpdateChecklistItem = (id: string) => {
+    return (title: string) => {
+      mutateForUpdateCI({ id, title })
+    }
+  }
+  const handleDeleteChecklistGroup = () => {
+    mutateForDeleteCG({ id: checklistGroup.id })
+    onClose()
+  }
+  const handleAddCGDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const description = e.target.value
+    mutateForUpdateCG({
+      id: checklistGroup.id,
+      title: '',
+      description,
+    })
+  }
+  const handleAddCGDescriptionWithEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const description = e.currentTarget.value
+    if (e.key === 'Enter') {
+      mutateForUpdateCG({
+        id: checklistGroup.id,
+        title: '',
+        description,
+      })
+    }
   }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
       <DrawerOverlay />
       <DrawerContent>
-        <Box mb={8}>
+        <Box>
           <DrawerCloseButton className='text-gray-400' />
         </Box>
-        <DrawerHeader>Your Task</DrawerHeader>
+        <DrawerHeader mt={10} mb={2}>
+          <Divider />
+        </DrawerHeader>
         <DrawerBody>
           <Box mb={6}>
             {/* Parent */}
             <InputChecklist
+              ariaLabel='group'
+              checklistItemId={checklistGroup.id}
+              checklisGroupEntity={checklistGroup}
+              queryInputValue={handleUpdateChecklistGroup}
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
+                defaultChecked: checklistGroup.is_completed,
               }}
               InputProps={{
                 colorScheme: 'white',
@@ -122,14 +310,19 @@ export const DrawerChecklist = ({
           {/* Childs */}
           <Box mb={6}>
             {checklistGroup &&
-              checklisItem?.data?.data?.map(({ id, title }) => (
+              checklisItem?.data?.data?.map((checklisItem: TChecklistItemEntity) => (
                 <InputChecklist
-                  key={`item-${id}`}
+                  ariaLabel='item'
+                  checklistItemId={checklisItem.id}
+                  checklisGroupEntity={checklistGroup}
+                  queryInputValue={handleUpdateChecklistItem(checklisItem.id)}
+                  key={`item-${checklisItem.id}`}
                   isCloseIcon={true}
-                  onClose={() => handleDeleteChecklistItem(id)}
+                  onClose={() => handleDeleteChecklistItem(checklisItem.id)}
                   CheckboxPros={{
                     colorScheme: 'twGray',
                     size: 'lg',
+                    isChecked: checklisItem.is_completed,
                   }}
                   InputProps={{
                     colorScheme: 'white',
@@ -138,12 +331,13 @@ export const DrawerChecklist = ({
                     focusBorderColor: 'twGray.300',
                     pl: '12',
                     size: 'md',
-                    value: title,
+                    value: checklisItem.title,
                   }}
                 />
               ))}
             <form className='mx-auto mt-1' onSubmit={handleSubmit(handleAddChecklistItem)}>
               <InputTask
+                variant='Add Item-Task'
                 className='w-full'
                 value={taskValue}
                 InputProps={{
@@ -159,7 +353,13 @@ export const DrawerChecklist = ({
             </form>
           </Box>
           <Box>
-            <Textarea resize={'none'} placeholder='Add note' />
+            <Textarea
+              onKeyPress={handleAddCGDescriptionWithEnter}
+              onBlur={handleAddCGDescription}
+              defaultValue={checklistGroup.description}
+              resize={'none'}
+              placeholder='Add note'
+            />
           </Box>
         </DrawerBody>
         <Divider />
@@ -167,11 +367,11 @@ export const DrawerChecklist = ({
           <Flex justifyContent={'space-between'} alignItems={'center'} w='full'>
             <Box>
               <Text className='text-gray-500' fontSize={'md'}>
-                Created 3 hours ago
+                Have a nice day!
               </Text>
             </Box>
             <Box>
-              <Button colorScheme='white'>
+              <Button colorScheme='white' onClick={handleDeleteChecklistGroup}>
                 <TrashIcon className='w-6 h-6 text-gray-400' />
               </Button>
             </Box>

@@ -7,63 +7,75 @@ import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { DrawerChecklist } from '~/src/components/drawer-checklist'
-import { useDisclosure, Box, Text } from '@chakra-ui/react'
+import { useDisclosure, Box, Text, useToast } from '@chakra-ui/react'
 import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
-import type { TChecklistGroupDB } from '~/src/types'
+import type { TChecklistGroupEntity } from '~/src/types'
 import { PostgrestResponse } from '@supabase/supabase-js'
 
 type FormValues = {
   checklistGroup: string
 }
 
-const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistGroupDB, 'user_id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistGroupDB>('checklist_group').insert([
+const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistGroupEntity, 'user_id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
     {
       title,
-      number_of_items: 0,
-      completed_items: 0,
-      uncompleted_items: 0,
+      description: '',
+      is_completed: false,
+      is_priority: false,
       user_id,
     },
   ])
-const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) =>
-  await supabaseClient.from('checklist_group').select('*').eq('user_id', queryKey[1])
+const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
+  const response = await supabaseClient.from('$DB_checklist_group').select('*').eq('user_id', queryKey[1])
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 
 export default function Dashboard() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupDB | null | undefined>(null)
+  const renderToastComponent = useToast()
+  const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading: isLoadingUser, isError } = useQuery('authorizedUser', selectAuthorizedUser)
-  const checklistGroupDB = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
+  const checklistGroupEntity = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
     enabled: !!authorizedUser,
   })
-  const { mutate, data: updatedData } = useMutation(insertChecklistGroup, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
+  const { mutate } = useMutation(insertChecklistGroup, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
+      renderToastComponent({
+        title: 'Group-Task created.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
       const freshData = freshQueryData.data || []
       queryClient.setQueryData(['checklistGroup', authorizedUser?.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
+        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
         return {
-          ...oldData,
+          ...$oldQueryData,
           data: [...oldData, ...freshData],
         }
       })
     },
   })
   const checklistGroupValue = watch('checklistGroup')
-  if (isLoadingUser || checklistGroupDB.isLoading) {
+  if (isLoadingUser || checklistGroupEntity.isLoading) {
     return (
       <div className='pt-40'>
         <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
       </div>
     )
   }
-  if (isError || checklistGroupDB.isError) {
+  if (isError || checklistGroupEntity.isError) {
     return router.push('/404')
   }
   const handleAddChecklistGroup = async (values: FormValues) => {
@@ -76,7 +88,7 @@ export default function Dashboard() {
       checklistGroup: '',
     })
   }
-  const handleShowDetailChecklist = (checklistGroup: TChecklistGroupDB) => {
+  const handleShowDetailChecklist = (checklistGroup: TChecklistGroupEntity) => {
     return () => {
       setChecklistGroup(checklistGroup)
       onOpen()
@@ -118,16 +130,17 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <Box className='pt-12 pb-36'>
-          {checklistGroupDB?.data?.data?.map((checklistGroup) => (
+          {checklistGroupEntity?.data?.data?.map((checklistGroup) => (
             <ChecklistItem
               key={checklistGroup.id}
-              value={checklistGroup.title}
+              checklisGroupEntity={checklistGroup}
               onClick={handleShowDetailChecklist(checklistGroup)}
               className='ring-2 ring-white hover:ring-gray-300 mb-3'
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
                 className: 'mx-4',
+                isChecked: checklistGroup.is_completed,
               }}
               TextProps={{
                 className: 'font-poppins cursor-default',
@@ -139,6 +152,7 @@ export default function Dashboard() {
         <Box className='bg-white fixed bottom-0 right-0 left-0 pt-6 pb-12 border-t-2 border-gray-100 z-10'>
           <form className='//bg-green-400 max-w-xl mx-auto' onSubmit={handleSubmit(handleAddChecklistGroup)}>
             <InputTask
+              variant='Add Group-Task'
               value={checklistGroupValue}
               InputProps={{
                 colorScheme: 'white',

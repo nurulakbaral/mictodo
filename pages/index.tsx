@@ -20,7 +20,7 @@ export default function Home() {
     }
     const inspectUser = await supabaseClient.from('users').select('id').eq('id', userId)
     if (!inspectUser.data?.length) {
-      const insertUser = await supabaseClient
+      await supabaseClient
         .from('users')
         .insert([{ id: userId, full_name: session?.user?.user_metadata.name, email: session?.user?.email }])
     }
