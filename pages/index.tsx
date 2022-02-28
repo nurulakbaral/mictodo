@@ -48,6 +48,8 @@ export default function Home() {
     <>
       <Head>
         <title>Mictodo - Powerfull Todo List</title>
+        <link rel='icon' href='/icons/icon-48x48.png' />
+        <link rel='manifest' href='/manifest.json' />
       </Head>
       <main className='pt-32'>
         <div className='mx-auto w-5/6 mb-40'>

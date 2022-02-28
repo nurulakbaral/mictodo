@@ -102,6 +102,8 @@ export default function Dashboard() {
       <>
         <Head>
           <title>Mictodo - Login</title>
+          <link rel='icon' href='/icons/icon-48x48.png' />
+          <link rel='manifest' href='/manifest.json' />
         </Head>
         <main className='pt-12'>
           <Box mt={32}>
