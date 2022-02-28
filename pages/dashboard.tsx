@@ -39,7 +39,7 @@ export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading: isLoadingUser, isError } = useQuery('authorizedUser', selectAuthorizedUser)
-  const checklistGroupDB = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
+  const checklistGroupEntity = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
     enabled: !!authorizedUser,
   })
   const { mutate } = useMutation(insertChecklistGroup, {
@@ -63,14 +63,14 @@ export default function Dashboard() {
     },
   })
   const checklistGroupValue = watch('checklistGroup')
-  if (isLoadingUser || checklistGroupDB.isLoading) {
+  if (isLoadingUser || checklistGroupEntity.isLoading) {
     return (
       <div className='pt-40'>
         <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
       </div>
     )
   }
-  if (isError || checklistGroupDB.isError) {
+  if (isError || checklistGroupEntity.isError) {
     return router.push('/404')
   }
   const handleAddChecklistGroup = async (values: FormValues) => {
@@ -125,16 +125,17 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <Box className='pt-12 pb-36'>
-          {checklistGroupDB?.data?.data?.map((checklistGroup) => (
+          {checklistGroupEntity?.data?.data?.map((checklistGroup) => (
             <ChecklistItem
               key={checklistGroup.id}
-              value={checklistGroup.title}
+              checklisGroupEntity={checklistGroup}
               onClick={handleShowDetailChecklist(checklistGroup)}
               className='ring-2 ring-white hover:ring-gray-300 mb-3'
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
                 className: 'mx-4',
+                isChecked: checklistGroup.is_completed,
               }}
               TextProps={{
                 className: 'font-poppins cursor-default',

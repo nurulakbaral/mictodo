@@ -165,10 +165,14 @@ export const DrawerChecklist = ({
           <Box mb={6}>
             {/* Parent */}
             <InputChecklist
-              queryFn={handleUpdateChecklistGroup}
+              ariaLabel='group'
+              checklistItemId={checklistGroup.id}
+              checklisGroupEntity={checklistGroup}
+              queryInputValue={handleUpdateChecklistGroup}
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
+                defaultChecked: checklistGroup.is_completed,
               }}
               InputProps={{
                 colorScheme: 'white',
@@ -184,15 +188,19 @@ export const DrawerChecklist = ({
           {/* Childs */}
           <Box mb={6}>
             {checklistGroup &&
-              checklisItem?.data?.data?.map(({ id, title }) => (
+              checklisItem?.data?.data?.map((checklisItem: TChecklistItemEntity) => (
                 <InputChecklist
-                  queryFn={handleUpdateChecklistItem(id)}
-                  key={`item-${id}`}
+                  ariaLabel='item'
+                  checklistItemId={checklisItem.id}
+                  checklisGroupEntity={checklistGroup}
+                  queryInputValue={handleUpdateChecklistItem(checklisItem.id)}
+                  key={`item-${checklisItem.id}`}
                   isCloseIcon={true}
-                  onClose={() => handleDeleteChecklistItem(id)}
+                  onClose={() => handleDeleteChecklistItem(checklisItem.id)}
                   CheckboxPros={{
                     colorScheme: 'twGray',
                     size: 'lg',
+                    isChecked: checklisItem.is_completed,
                   }}
                   InputProps={{
                     colorScheme: 'white',
@@ -201,7 +209,7 @@ export const DrawerChecklist = ({
                     focusBorderColor: 'twGray.300',
                     pl: '12',
                     size: 'md',
-                    value: title,
+                    value: checklisItem.title,
                   }}
                 />
               ))}
