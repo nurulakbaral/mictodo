@@ -79,8 +79,9 @@ const updateChecklistGroup = async ({
   id,
   title,
   description,
-}: Pick<TChecklistGroupEntity, 'id' | 'title' | 'description'>) => {
-  const entity = !description ? { title } : { description }
+  isOnlyUpdateDescription,
+}: Pick<TChecklistGroupEntity, 'id' | 'title' | 'description'> & { isOnlyUpdateDescription: boolean }) => {
+  const entity = isOnlyUpdateDescription ? { description } : { title }
   const response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').update(entity).match({ id })
   if (response.error) {
     throw new Error(response.error.message)
@@ -244,7 +245,7 @@ export const DrawerChecklist = ({
     mutateForDeleteCI({ id: checklisItemId })
   }
   const handleUpdateChecklistGroup = (title: string) => {
-    mutateForUpdateCG({ id: checklistGroup.id, title, description: '' })
+    mutateForUpdateCG({ id: checklistGroup.id, title, description: '', isOnlyUpdateDescription: false })
   }
   const handleUpdateChecklistItem = (id: string) => {
     return (title: string) => {
@@ -261,6 +262,7 @@ export const DrawerChecklist = ({
       id: checklistGroup.id,
       title: '',
       description,
+      isOnlyUpdateDescription: true,
     })
   }
   const handleAddCGDescriptionWithEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -270,6 +272,7 @@ export const DrawerChecklist = ({
         id: checklistGroup.id,
         title: '',
         description,
+        isOnlyUpdateDescription: true,
       })
     }
   }
@@ -280,7 +283,7 @@ export const DrawerChecklist = ({
         <Box>
           <DrawerCloseButton className='text-gray-400' />
         </Box>
-        <DrawerHeader mt={10} mb={2}>
+        <DrawerHeader mt={12} mb={0}>
           <Divider />
         </DrawerHeader>
         <DrawerBody>
