@@ -33,24 +33,65 @@ type FormValues = {
 }
 
 // Notes: Checklist Item Fetch
-const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) =>
-  await supabaseClient.from('$DB_checklist_item').select('*').match({ checklist_group_id: queryKey[1] })
+const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) => {
+  const response = await supabaseClient
+    .from('$DB_checklist_item')
+    .select('*')
+    .match({ checklist_group_id: queryKey[1] })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 const insertChecklistItem = async ({
   checklist_group_id,
   title,
-}: Partial<Pick<TChecklistItemEntity, 'checklist_group_id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').insert([
+}: Partial<Pick<TChecklistItemEntity, 'checklist_group_id' | 'title'>>) => {
+  const response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').insert([
     {
       title,
       is_completed: false,
       checklist_group_id,
     },
   ])
-const updateChecklistItem = async ({ id, title }: Partial<Pick<TChecklistItemEntity, 'id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').update({ title }).match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+const updateChecklistItem = async ({ id, title }: Partial<Pick<TChecklistItemEntity, 'id' | 'title'>>) => {
+  const response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').update({ title }).match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+const deleteChecklistItem = async ({ id }: Partial<Pick<TChecklistItemEntity, 'id'>>) => {
+  const response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').delete().match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+
 // Notes: Checklist Group Fetch
-const updateChecklistGroup = async ({ id, title }: Partial<Pick<TChecklistGroupEntity, 'id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').update({ title }).match({ id })
+const updateChecklistGroup = async ({ id, title }: Partial<Pick<TChecklistGroupEntity, 'id' | 'title'>>) => {
+  const response = await supabaseClient
+    .from<TChecklistGroupEntity>('$DB_checklist_group')
+    .update({ title })
+    .match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
+const deleteChecklistGroup = async ({ id }: Partial<Pick<TChecklistGroupEntity, 'id'>>) => {
+  const response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').delete().match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 
 export const DrawerChecklist = ({
   checklistGroup,
@@ -130,6 +171,61 @@ export const DrawerChecklist = ({
       })
     },
   })
+  // Notes: Delete Checklist Group
+  const { mutate: mutateForDeleteCG } = useMutation(deleteChecklistGroup, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
+      renderToastComponent({
+        title: 'Group-Task deleted.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistGroup', checklistGroup.user_id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistGroupEntity) => old.id !== freshData.id
+        return {
+          ...$oldQueryData,
+          data: oldData.filter(updateOldData),
+        }
+      })
+    },
+    onError: () => {
+      renderToastComponent({
+        title: 'Failed to delete Group-Task!',
+        description: 'Delete the Item-Task, then try again to delete the Group-Task.',
+        status: 'error',
+        duration: null,
+        isClosable: true,
+        position: 'top',
+      })
+    },
+  })
+  // Notes: Delete Checklist Items
+  const { mutate: mutateForDeleteCI } = useMutation(deleteChecklistItem, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
+      renderToastComponent({
+        title: 'Item-Task deleted.',
+        status: 'success',
+        duration: 800,
+        isClosable: true,
+        position: 'top',
+      })
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistItemEntity) => old.id !== freshData.id
+        return {
+          ...$oldQueryData,
+          data: oldData.filter(updateOldData),
+        }
+      })
+    },
+  })
   const handleAddChecklistItem = async (values: FormValues) => {
     if (values.checklistItem === '') {
       alert('Please enter a checklistItem')
@@ -143,7 +239,7 @@ export const DrawerChecklist = ({
     })
   }
   const handleDeleteChecklistItem = (checklisItemId: string) => {
-    console.log('🪲 - delete checklistItem')
+    mutateForDeleteCI({ id: checklisItemId })
   }
   const handleUpdateChecklistGroup = (title: string) => {
     mutateForUpdateCG({ id: checklistGroup.id, title })
@@ -153,6 +249,10 @@ export const DrawerChecklist = ({
       mutateForUpdateCI({ id, title })
     }
   }
+  const handleDeleteChecklistGroup = () => {
+    mutateForDeleteCG({ id: checklistGroup.id })
+    onClose()
+  }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
       <DrawerOverlay />
@@ -160,7 +260,7 @@ export const DrawerChecklist = ({
         <Box mb={8}>
           <DrawerCloseButton className='text-gray-400' />
         </Box>
-        <DrawerHeader>Your Task</DrawerHeader>
+        <DrawerHeader>Hello World :)</DrawerHeader>
         <DrawerBody>
           <Box mb={6}>
             {/* Parent */}
@@ -238,11 +338,11 @@ export const DrawerChecklist = ({
           <Flex justifyContent={'space-between'} alignItems={'center'} w='full'>
             <Box>
               <Text className='text-gray-500' fontSize={'md'}>
-                Created 3 hours ago
+                Have a nice day!
               </Text>
             </Box>
             <Box>
-              <Button colorScheme='white'>
+              <Button colorScheme='white' onClick={handleDeleteChecklistGroup}>
                 <TrashIcon className='w-6 h-6 text-gray-400' />
               </Button>
             </Box>

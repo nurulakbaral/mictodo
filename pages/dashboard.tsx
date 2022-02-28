@@ -27,8 +27,13 @@ const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistG
       user_id,
     },
   ])
-const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) =>
-  await supabaseClient.from('$DB_checklist_group').select('*').eq('user_id', queryKey[1])
+const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
+  const response = await supabaseClient.from('$DB_checklist_group').select('*').eq('user_id', queryKey[1])
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 
 export default function Dashboard() {

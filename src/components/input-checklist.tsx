@@ -21,13 +21,32 @@ type InputChecklistProps = BaseProps<
   'div'
 >
 
-const updateChecklistItem = async ({ id, is_completed }: Partial<Pick<TChecklistItemEntity, 'id' | 'is_completed'>>) =>
-  await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').update({ is_completed }).match({ id })
+const updateChecklistItem = async ({
+  id,
+  is_completed,
+}: Partial<Pick<TChecklistItemEntity, 'id' | 'is_completed'>>) => {
+  const response = await supabaseClient
+    .from<TChecklistItemEntity>('$DB_checklist_item')
+    .update({ is_completed })
+    .match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 const updateChecklistGroup = async ({
   id,
   is_completed,
-}: Partial<Pick<TChecklistGroupEntity, 'id' | 'is_completed'>>) =>
-  await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').update({ is_completed }).match({ id })
+}: Partial<Pick<TChecklistGroupEntity, 'id' | 'is_completed'>>) => {
+  const response = await supabaseClient
+    .from<TChecklistGroupEntity>('$DB_checklist_group')
+    .update({ is_completed })
+    .match({ id })
+  if (response.error) {
+    throw new Error(response.error.message)
+  }
+  return response
+}
 
 export const InputChecklist = ({
   ariaLabel,
