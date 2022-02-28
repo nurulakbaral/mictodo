@@ -41,7 +41,7 @@ export default function Dashboard() {
   const checklistGroupDB = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
     enabled: !!authorizedUser,
   })
-  const { mutate, data: updatedData } = useMutation(insertChecklistGroup, {
+  const { mutate } = useMutation(insertChecklistGroup, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
       const freshData = freshQueryData.data || []
       queryClient.setQueryData(['checklistGroup', authorizedUser?.id], (oldQueryData: any) => {

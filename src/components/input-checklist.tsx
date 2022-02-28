@@ -10,7 +10,7 @@ type InputChecklistProps = BaseProps<
     CheckboxPros: CheckboxProps
     isCloseIcon?: boolean
     onClose?: () => void
-    queryFn?: any
+    queryFn?: (value: string) => void
   },
   'div'
 >
@@ -19,7 +19,8 @@ export const InputChecklist = ({
   className,
   isCloseIcon = false,
   onClose,
-  InputProps: { onChange, value = '', onBlur, defaultValue, ...InputProps },
+  queryFn,
+  InputProps: { onChange, value = '', onBlur, defaultValue, onKeyPress, ...InputProps },
   CheckboxPros: { onChange: $checkboxOnChange, ...CheckboxProps },
   ...props
 }: InputChecklistProps) => {
@@ -28,8 +29,17 @@ export const InputChecklist = ({
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)
   }
-  const handleSendData = () => {
-    console.log('🪲 - send data', inputValue)
+  const handleSendData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (queryFn) {
+      queryFn(value)
+    }
+  }
+  const handleSendDataWithEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value
+    if (queryFn && e.key === 'Enter') {
+      queryFn(value)
+    }
   }
   React.useEffect(() => {
     setInputValue(value as string)
@@ -39,7 +49,13 @@ export const InputChecklist = ({
       <div className='absolute z-10 mx-4 mt-1'>
         <Checkbox onChange={handleCheckbox} {...CheckboxProps} />
       </div>
-      <Input onBlur={handleSendData} onChange={handleInput} value={inputValue} {...InputProps} />
+      <Input
+        onBlur={handleSendData}
+        onKeyPress={handleSendDataWithEnter}
+        onChange={handleInput}
+        value={inputValue}
+        {...InputProps}
+      />
       {isCloseIcon && (
         <div className='absolute z-10 mx-4 right-0'>
           <XCircleIcon onClick={onClose} className='h-4 w-4 text-gray-400 cursor-pointer hover:text-red-600' />
