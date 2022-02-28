@@ -30,6 +30,7 @@ type FormValues = {
   checklistItem: string
 }
 
+// Notes: Checklist Item Fetch
 const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) =>
   await supabaseClient.from('checklist_item').select('*').match({ checklist_group_id: queryKey[1] })
 const insertChecklistItem = async ({
@@ -45,6 +46,9 @@ const insertChecklistItem = async ({
       checklist_group_id,
     },
   ])
+const updateChecklistItem = async ({ id, title }: Partial<Pick<TChecklistItemDB, 'id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistItemDB>('checklist_item').update({ title }).match({ id })
+// Notes: Checklist Group Fetch
 const updateChecklistGroup = async ({ id, title }: Partial<Pick<TChecklistGroupDB, 'id' | 'title'>>) =>
   await supabaseClient.from<TChecklistGroupDB>('checklist_group').update({ title }).match({ id })
 
@@ -54,22 +58,43 @@ export const DrawerChecklist = ({
   onClose = () => {},
   placement = 'right',
 }: DrawerChecklistProps) => {
+  const { register, handleSubmit, watch, reset } = useForm<FormValues>()
+  const taskValue = watch('checklistItem')
+  // Notes: Get Checklist Items
   const queryClient = useQueryClient()
   const checklisItem = useQuery(['checklistItem', checklistGroup.id], selectChecklistItem)
+  // Notes: Insert Checklist Items
   const { mutate: mutateForInsertCI } = useMutation(insertChecklistItem, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
-      const freshData = freshQueryData.data || []
+      const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
         const $oldQueryData: PostgrestResponse<TChecklistItemDB> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
         return {
-          ...oldData,
-          data: [...oldData, ...freshData],
+          ...$oldQueryData,
+          data: [...oldData, freshData],
         }
       })
     },
   })
+  // Notes: Update Checklist Items
+  const { mutate: mutateForUpdateCI } = useMutation(updateChecklistItem, {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
+      const [freshData] = freshQueryData.data || []
+      queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
+        // Notes: $oldQueryData variable is only used to get type oldQueryData
+        const $oldQueryData: PostgrestResponse<TChecklistItemDB> = { ...oldQueryData }
+        const oldData = $oldQueryData.data || []
+        const updateOldData = (old: TChecklistItemDB) => (old.id === freshData.id ? freshData : old)
+        return {
+          ...$oldQueryData,
+          data: oldData.map(updateOldData),
+        }
+      })
+    },
+  })
+  // Notes: Update Checklist Group
   const { mutate: mutateForUpdateCG } = useMutation(updateChecklistGroup, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
       const [freshData] = freshQueryData.data || []
@@ -79,14 +104,12 @@ export const DrawerChecklist = ({
         const oldData = $oldQueryData.data || []
         const updateOldData = (old: TChecklistGroupDB) => (old.id === freshData.id ? freshData : old)
         return {
-          ...oldData,
+          ...$oldQueryData,
           data: oldData.map(updateOldData),
         }
       })
     },
   })
-  const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const taskValue = watch('checklistItem')
   const handleAddChecklistItem = async (values: FormValues) => {
     if (values.checklistItem === '') {
       alert('Please enter a checklistItem')
@@ -102,8 +125,13 @@ export const DrawerChecklist = ({
   const handleDeleteChecklistItem = (checklisItemId: string) => {
     console.log('🪲 - delete checklistItem')
   }
-  const handleChecklistGroupUpdate = (title: string) => {
+  const handleUpdateChecklistGroup = (title: string) => {
     mutateForUpdateCG({ id: checklistGroup.id, title })
+  }
+  const handleUpdateChecklistItem = (id: string) => {
+    return (title: string) => {
+      mutateForUpdateCI({ id, title })
+    }
   }
   return (
     <Drawer isOpen={isOpen} placement={placement} onClose={onClose} size='sm'>
@@ -117,7 +145,7 @@ export const DrawerChecklist = ({
           <Box mb={6}>
             {/* Parent */}
             <InputChecklist
-              queryFn={handleChecklistGroupUpdate}
+              queryFn={handleUpdateChecklistGroup}
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
@@ -138,6 +166,7 @@ export const DrawerChecklist = ({
             {checklistGroup &&
               checklisItem?.data?.data?.map(({ id, title }) => (
                 <InputChecklist
+                  queryFn={handleUpdateChecklistItem(id)}
                   key={`item-${id}`}
                   isCloseIcon={true}
                   onClose={() => handleDeleteChecklistItem(id)}

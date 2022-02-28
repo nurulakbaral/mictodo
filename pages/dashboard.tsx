@@ -49,7 +49,7 @@ export default function Dashboard() {
         const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
         return {
-          ...oldData,
+          ...$oldQueryData,
           data: [...oldData, ...freshData],
         }
       })
