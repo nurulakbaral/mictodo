@@ -5,26 +5,24 @@ export type BaseProps<OptionsProps, HTMLElementName extends As> = OptionsProps &
   React.ComponentPropsWithoutRef<HTMLElementName>
 
 // Notes: Supabase Database Types
-export type TDefaultDB = {
+export type TDefaultEntity = {
   id: string
   created_at?: Date
   updated_at?: Date
 }
-export type TUserDB = {
+export type TUserEntity = {
   full_name: string
   email: string
-} & TDefaultDB
-export type TChecklistGroupDB = {
+} & TDefaultEntity
+export type TChecklistGroupEntity = {
   title: string
-  number_of_items: number
-  completed_items: number
-  uncompleted_items: number
-  user_id: string
-} & TDefaultDB
-export type TChecklistItemDB = {
-  title: string
+  description: string
   is_completed: boolean
   is_priority: boolean
-  description: string
+  user_id: string
+} & TDefaultEntity
+export type TChecklistItemEntity = {
+  title: string
+  is_completed: boolean
   checklist_group_id: string
-} & TDefaultDB
+} & TDefaultEntity

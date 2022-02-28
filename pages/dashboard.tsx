@@ -10,32 +10,32 @@ import { DrawerChecklist } from '~/src/components/drawer-checklist'
 import { useDisclosure, Box, Text, useToast } from '@chakra-ui/react'
 import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
-import type { TChecklistGroupDB } from '~/src/types'
+import type { TChecklistGroupEntity } from '~/src/types'
 import { PostgrestResponse } from '@supabase/supabase-js'
 
 type FormValues = {
   checklistGroup: string
 }
 
-const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistGroupDB, 'user_id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistGroupDB>('checklist_group').insert([
+const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistGroupEntity, 'user_id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
     {
       title,
-      number_of_items: 0,
-      completed_items: 0,
-      uncompleted_items: 0,
+      description: '',
+      is_completed: false,
+      is_priority: false,
       user_id,
     },
   ])
 const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) =>
-  await supabaseClient.from('checklist_group').select('*').eq('user_id', queryKey[1])
+  await supabaseClient.from('$DB_checklist_group').select('*').eq('user_id', queryKey[1])
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 
 export default function Dashboard() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const renderToastComponent = useToast()
-  const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupDB | null | undefined>(null)
+  const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading: isLoadingUser, isError } = useQuery('authorizedUser', selectAuthorizedUser)
@@ -43,9 +43,9 @@ export default function Dashboard() {
     enabled: !!authorizedUser,
   })
   const { mutate } = useMutation(insertChecklistGroup, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
       renderToastComponent({
-        title: 'Task created.',
+        title: 'Group-Task created.',
         status: 'success',
         duration: 800,
         position: 'top',
@@ -53,7 +53,7 @@ export default function Dashboard() {
       const freshData = freshQueryData.data || []
       queryClient.setQueryData(['checklistGroup', authorizedUser?.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
+        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
         return {
           ...$oldQueryData,
@@ -83,7 +83,7 @@ export default function Dashboard() {
       checklistGroup: '',
     })
   }
-  const handleShowDetailChecklist = (checklistGroup: TChecklistGroupDB) => {
+  const handleShowDetailChecklist = (checklistGroup: TChecklistGroupEntity) => {
     return () => {
       setChecklistGroup(checklistGroup)
       onOpen()

@@ -21,37 +21,36 @@ import { InputChecklist } from '~/src/components/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
-import type { TChecklistGroupDB, TChecklistItemDB } from '~/src/types'
+import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { PostgrestResponse } from '@supabase/supabase-js'
 
-type DrawerChecklistProps = { checklistGroup: TChecklistGroupDB } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
+type DrawerChecklistProps = { checklistGroup: TChecklistGroupEntity } & Pick<DrawerProps, 'placement'> &
+  UseDisclosureProps
 type FormValues = {
   checklistItem: string
 }
 
 // Notes: Checklist Item Fetch
 const selectChecklistItem = async ({ queryKey }: { queryKey: Array<string> }) =>
-  await supabaseClient.from('checklist_item').select('*').match({ checklist_group_id: queryKey[1] })
+  await supabaseClient.from('$DB_checklist_item').select('*').match({ checklist_group_id: queryKey[1] })
 const insertChecklistItem = async ({
   checklist_group_id,
   title,
-}: Partial<Pick<TChecklistItemDB, 'checklist_group_id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistItemDB>('checklist_item').insert([
+}: Partial<Pick<TChecklistItemEntity, 'checklist_group_id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').insert([
     {
       title,
       is_completed: false,
-      is_priority: false,
-      description: '',
       checklist_group_id,
     },
   ])
-const updateChecklistItem = async ({ id, title }: Partial<Pick<TChecklistItemDB, 'id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistItemDB>('checklist_item').update({ title }).match({ id })
+const updateChecklistItem = async ({ id, title }: Partial<Pick<TChecklistItemEntity, 'id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').update({ title }).match({ id })
 // Notes: Checklist Group Fetch
-const updateChecklistGroup = async ({ id, title }: Partial<Pick<TChecklistGroupDB, 'id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistGroupDB>('checklist_group').update({ title }).match({ id })
+const updateChecklistGroup = async ({ id, title }: Partial<Pick<TChecklistGroupEntity, 'id' | 'title'>>) =>
+  await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').update({ title }).match({ id })
 
 export const DrawerChecklist = ({
   checklistGroup,
@@ -67,9 +66,9 @@ export const DrawerChecklist = ({
   const checklisItem = useQuery(['checklistItem', checklistGroup.id], selectChecklistItem)
   // Notes: Insert Checklist Items
   const { mutate: mutateForInsertCI } = useMutation(insertChecklistItem, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
       renderToastComponent({
-        title: 'Child-Task created.',
+        title: 'Item-Task created.',
         status: 'success',
         duration: 800,
         position: 'top',
@@ -77,7 +76,7 @@ export const DrawerChecklist = ({
       const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistItemDB> = { ...oldQueryData }
+        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
         return {
           ...$oldQueryData,
@@ -88,9 +87,9 @@ export const DrawerChecklist = ({
   })
   // Notes: Update Checklist Items
   const { mutate: mutateForUpdateCI } = useMutation(updateChecklistItem, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
       renderToastComponent({
-        title: 'Child-Task updated.',
+        title: 'Item-Task updated.',
         status: 'success',
         duration: 800,
         isClosable: true,
@@ -99,9 +98,9 @@ export const DrawerChecklist = ({
       const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistItemDB> = { ...oldQueryData }
+        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
-        const updateOldData = (old: TChecklistItemDB) => (old.id === freshData.id ? freshData : old)
+        const updateOldData = (old: TChecklistItemEntity) => (old.id === freshData.id ? freshData : old)
         return {
           ...$oldQueryData,
           data: oldData.map(updateOldData),
@@ -111,9 +110,9 @@ export const DrawerChecklist = ({
   })
   // Notes: Update Checklist Group
   const { mutate: mutateForUpdateCG } = useMutation(updateChecklistGroup, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
+    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
       renderToastComponent({
-        title: 'Task updated.',
+        title: 'Group-Task updated.',
         status: 'success',
         duration: 800,
         position: 'top',
@@ -121,9 +120,9 @@ export const DrawerChecklist = ({
       const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistGroup', checklistGroup.user_id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistGroupDB> = { ...oldQueryData }
+        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
         const oldData = $oldQueryData.data || []
-        const updateOldData = (old: TChecklistGroupDB) => (old.id === freshData.id ? freshData : old)
+        const updateOldData = (old: TChecklistGroupEntity) => (old.id === freshData.id ? freshData : old)
         return {
           ...$oldQueryData,
           data: oldData.map(updateOldData),
