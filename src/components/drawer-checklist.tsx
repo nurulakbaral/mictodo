@@ -15,6 +15,7 @@ import {
   Box,
   Flex,
   Textarea,
+  useToast,
 } from '@chakra-ui/react'
 import { InputChecklist } from '~/src/components/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
@@ -58,6 +59,7 @@ export const DrawerChecklist = ({
   onClose = () => {},
   placement = 'right',
 }: DrawerChecklistProps) => {
+  const renderToastComponent = useToast()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const taskValue = watch('checklistItem')
   // Notes: Get Checklist Items
@@ -66,6 +68,12 @@ export const DrawerChecklist = ({
   // Notes: Insert Checklist Items
   const { mutate: mutateForInsertCI } = useMutation(insertChecklistItem, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
+      renderToastComponent({
+        title: 'Child-Task created.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
       const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
@@ -81,6 +89,13 @@ export const DrawerChecklist = ({
   // Notes: Update Checklist Items
   const { mutate: mutateForUpdateCI } = useMutation(updateChecklistItem, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemDB>) => {
+      renderToastComponent({
+        title: 'Child-Task updated.',
+        status: 'success',
+        duration: 800,
+        isClosable: true,
+        position: 'top',
+      })
       const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistItem', checklistGroup.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
@@ -97,6 +112,12 @@ export const DrawerChecklist = ({
   // Notes: Update Checklist Group
   const { mutate: mutateForUpdateCG } = useMutation(updateChecklistGroup, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
+      renderToastComponent({
+        title: 'Task updated.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
       const [freshData] = freshQueryData.data || []
       queryClient.setQueryData(['checklistGroup', checklistGroup.user_id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData

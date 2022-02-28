@@ -7,7 +7,7 @@ import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { DrawerChecklist } from '~/src/components/drawer-checklist'
-import { useDisclosure, Box, Text } from '@chakra-ui/react'
+import { useDisclosure, Box, Text, useToast } from '@chakra-ui/react'
 import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupDB } from '~/src/types'
@@ -34,6 +34,7 @@ const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const renderToastComponent = useToast()
   const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupDB | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
@@ -43,6 +44,12 @@ export default function Dashboard() {
   })
   const { mutate } = useMutation(insertChecklistGroup, {
     onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupDB>) => {
+      renderToastComponent({
+        title: 'Task created.',
+        status: 'success',
+        duration: 800,
+        position: 'top',
+      })
       const freshData = freshQueryData.data || []
       queryClient.setQueryData(['checklistGroup', authorizedUser?.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
