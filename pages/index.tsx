@@ -6,6 +6,7 @@ import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
 import { ProgressCircular } from '~/src/components/progress-circular'
+import { Box } from '@chakra-ui/react'
 
 export default function Home() {
   const router = useRouter()
@@ -26,8 +27,6 @@ export default function Home() {
     }
     router.push('/dashboard')
   })
-  const handleLogin = async () => await supabaseClient.auth.signIn({ provider: 'google' })
-  const handleLogout = async () => await supabaseClient.auth.signOut()
   useEffect(() => {
     const authorizedUserRestored: Session | null = JSON.parse(localStorage.getItem('supabase.auth.token') as string)
     const loadingIndicator = setTimeout(() => {
@@ -37,11 +36,14 @@ export default function Home() {
       clearTimeout(loadingIndicator)
     }
   }, [])
+  const handleLogin = async () => await supabaseClient.auth.signIn({ provider: 'google' })
+  const handleLogout = async () => await supabaseClient.auth.signOut()
+  const handleRedirectToDashboard = () => router.push('/dashboard')
   if (authorizedUser === undefined) {
     return (
-      <div className='pt-40'>
+      <Box className='pt-40'>
         <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
-      </div>
+      </Box>
     )
   }
   return (
@@ -51,28 +53,41 @@ export default function Home() {
         <link rel='icon' href='/icons/icon-48x48.png' />
         <link rel='manifest' href='/manifest.json' />
       </Head>
-      <main className='pt-32'>
-        <div className='mx-auto w-5/6 mb-40'>
+      <main className='pt-24'>
+        <Box className='mx-auto w-5/6 mb-32'>
           <h1 className='text-center text-6xl font-medium font-poppins mb-6'>Mictodo</h1>
           <h2 className='text-center text-base font-poppins text-gray-600'>
             The drawback of most <span className='font-bold'>To Do</span> applications is the absence of an Activity
             List. Mictodo comes with it 🤟
           </h2>
-        </div>
+        </Box>
         {!authorizedUser && (
-          <div className='text-center flex justify-center'>
+          <Box className='text-center flex justify-center'>
             <ButtonBase onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
               <FcGoogle className='w-8 h-8 mr-4' />
               <h1 className='text-lg font-medium'>Login with Google</h1>
             </ButtonBase>
-          </div>
+          </Box>
         )}
         {authorizedUser && (
-          <div className='text-center mt-12 flex justify-center'>
-            <ButtonBase onClick={handleLogout} className='py-3 px-6 rounded-md flex justify-center items-center'>
-              <h1 className='text-lg font-medium font-poppins'>Sign out</h1>
-            </ButtonBase>
-          </div>
+          <Box>
+            <Box textAlign={'center'} display={'flex'} justifyContent={'center'} mb={12}>
+              <ButtonBase
+                onClick={handleRedirectToDashboard}
+                className='py-3 px-6 rounded-md flex justify-center items-center font-medium font-poppins w-5/6'
+              >
+                Go to Dashboard
+              </ButtonBase>
+            </Box>
+            <Box className='text-center mt-12 flex justify-center'>
+              <ButtonBase
+                onClick={handleLogout}
+                className='py-3 px-6 rounded-md flex justify-center items-center w-5/6'
+              >
+                <h1 className='text-lg font-medium font-poppins'>Sign out</h1>
+              </ButtonBase>
+            </Box>
+          </Box>
         )}
       </main>
     </>
