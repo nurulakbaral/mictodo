@@ -55,7 +55,9 @@ export default function Home() {
       </Head>
       <main className='pt-24'>
         <Box className='mx-auto w-5/6 mb-32'>
-          <h1 className='text-center text-6xl font-medium font-poppins mb-6'>Mictodo</h1>
+          <h1 data-testid='title' className='text-center text-6xl font-medium font-poppins mb-6'>
+            Mictodo
+          </h1>
           <h2 className='text-center text-base font-poppins text-gray-600'>
             The drawback of most <span className='font-bold'>To Do</span> applications is the absence of an Activity
             List. Mictodo comes with it 🤟
