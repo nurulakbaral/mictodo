@@ -3,9 +3,9 @@
   "private": true,
   "scripts": {
     "dev:app": "next dev",
-    "dev:cy": "cypress open",
-    "build": "next build",
-    "start": "next start",
+    "test:cy": "cypress open",
+    "build:app": "next build",
+    "start:app": "next start",
     "lint": "next lint",
     "prepare": "husky install",
     "format": "prettier --write \"{pages,src,archives}/**/*.{js,jsx,ts,tsx}\""
