@@ -65,7 +65,7 @@ export const ChecklistItem = ({
       {...props}
     >
       <Box h='full' rounded={'md'} className='flex items-center' mb={0.2}>
-        <Checkbox onChange={handleCheckbox} {...CheckboxProps} />
+        <Checkbox aria-label='checklist-group-checkbox' onChange={handleCheckbox} {...CheckboxProps} />
       </Box>
       <Box h='full' w='full' rounded={'md'} className='flex items-center' onClick={onClick}>
         <Text {...TextProps}>{checklisGroupEntity.title}</Text>
