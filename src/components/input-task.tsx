@@ -34,7 +34,7 @@ export const InputTask = ({ variant, className, value, InputProps, ...props }: I
       {...props}
     >
       {placeholder && <VariantPlaceholder variant={variant} />}
-      <Input {...InputProps} />
+      <Input data-testid='checklist-group-input' {...InputProps} />
     </div>
   )
 }

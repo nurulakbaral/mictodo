@@ -59,7 +59,11 @@ export const ChecklistItem = ({
     mutate({ id: checklisGroupEntity.id, is_completed: isChecked })
   }
   return (
-    <Box className={`w-5/6 mx-auto h-12 flex items-center border-[1px] rounded-md ${className}`} {...props}>
+    <Box
+      data-testid='checklist-group-unit'
+      className={`w-5/6 mx-auto h-12 flex items-center border-[1px] rounded-md ${className}`}
+      {...props}
+    >
       <Box h='full' rounded={'md'} className='flex items-center' mb={0.2}>
         <Checkbox onChange={handleCheckbox} {...CheckboxProps} />
       </Box>

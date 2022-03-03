@@ -3,6 +3,10 @@ describe('Login', () => {
     cy.visit('http://localhost:3000/')
     cy.viewport(1280, 1000)
   })
+  afterEach(() => {
+    // Notes: .pause() is used to wait for the animation to finish (check your testis right)
+    cy.pause()
+  })
   it('Login page looks good', () => {
     cy.contains('Mictodo')
     cy.contains('Login with Google')
@@ -11,9 +15,15 @@ describe('Login', () => {
     cy.visit('http://localhost:3000/dashboard')
     cy.contains('Back to Home').click()
   })
+  it('Success set account data on your .env file (fake login)', () => {
+    expect(Cypress.env('localStorageKey')).to.equal('supabase.auth.token')
+    expect(Cypress.env('localStorageValue')).to.not.equal('')
+  })
   it('Authorized user', () => {
     // Notes: Get user data (manual assignt)
-    window.localStorage.setItem(Cypress.env('localStorageKey'), Cypress.env('localStorageValue'))
+    cy.then(() => {
+      window.localStorage.setItem(Cypress.env('localStorageKey'), Cypress.env('localStorageValue'))
+    })
     cy.visit('http://localhost:3000/dashboard')
     cy.contains('Hallo')
   })
