@@ -374,7 +374,11 @@ export const DrawerChecklist = ({
               </Text>
             </Box>
             <Box>
-              <Button colorScheme='white' onClick={handleDeleteChecklistGroup}>
+              <Button
+                data-testid='btn-remove-checklist-group-unit'
+                colorScheme='white'
+                onClick={handleDeleteChecklistGroup}
+              >
                 <TrashIcon className='w-6 h-6 text-gray-400' />
               </Button>
             </Box>
