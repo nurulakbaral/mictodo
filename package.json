@@ -18,6 +18,7 @@
     "@reduxjs/toolkit": "^1.7.2",
     "@supabase/supabase-js": "^1.30.0",
     "add": "^2.0.6",
+    "dotenv": "^16.0.0",
     "framer-motion": "^6",
     "global": "^4.4.0",
     "lodash": "^4.17.21",
