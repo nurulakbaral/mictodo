@@ -160,6 +160,7 @@ export default function Dashboard() {
             <InputTask
               variant='Add Group-Task'
               value={checklistGroupValue}
+              dataTestId='checklist-group-input'
               InputProps={{
                 colorScheme: 'white',
                 autoComplete: 'off',
