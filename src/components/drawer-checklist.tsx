@@ -290,6 +290,7 @@ export const DrawerChecklist = ({
           <Box mb={6}>
             {/* Parent */}
             <InputChecklist
+              dataTestId='checklist-group-unit-on-drawer'
               ariaLabel='group'
               checklistItemId={checklistGroup.id}
               checklisGroupEntity={checklistGroup}
@@ -315,6 +316,7 @@ export const DrawerChecklist = ({
             {checklistGroup &&
               checklisItem?.data?.data?.map((checklisItem: TChecklistItemEntity) => (
                 <InputChecklist
+                  dataTestId='checklist-item-unit-on-drawer'
                   ariaLabel='item'
                   checklistItemId={checklisItem.id}
                   checklisGroupEntity={checklistGroup}
@@ -338,11 +340,16 @@ export const DrawerChecklist = ({
                   }}
                 />
               ))}
-            <form className='mx-auto mt-1' onSubmit={handleSubmit(handleAddChecklistItem)}>
+            <form
+              data-testId='checklist-item-form'
+              className='mx-auto mt-1'
+              onSubmit={handleSubmit(handleAddChecklistItem)}
+            >
               <InputTask
                 variant='Add Item-Task'
                 className='w-full'
                 value={taskValue}
+                dataTestId='checklist-item-input'
                 InputProps={{
                   colorScheme: 'white',
                   autoComplete: 'off',
@@ -357,6 +364,7 @@ export const DrawerChecklist = ({
           </Box>
           <Box>
             <Textarea
+              data-testId='checklist-group-description-on-drawer'
               onKeyPress={handleAddCGDescriptionWithEnter}
               onBlur={handleAddCGDescription}
               defaultValue={checklistGroup.description}

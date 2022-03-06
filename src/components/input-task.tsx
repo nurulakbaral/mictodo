@@ -8,6 +8,7 @@ type InputTaskProps = BaseProps<
     value: string
     variant: string
     InputProps?: InputProps
+    dataTestId: string
   },
   'div'
 >
@@ -19,7 +20,7 @@ const VariantPlaceholder = ({ variant }: Pick<InputTaskProps, 'variant'>) => (
   </div>
 )
 
-export const InputTask = ({ variant, className, value, InputProps, ...props }: InputTaskProps) => {
+export const InputTask = ({ variant, className, value, InputProps, dataTestId, ...props }: InputTaskProps) => {
   const [placeholder, setPlaceholder] = React.useState<boolean>(true)
   // Notes: if value is NOT '' || undefined, don't show placeholder
   const handlePlaceholderFocus = () =>
@@ -34,7 +35,7 @@ export const InputTask = ({ variant, className, value, InputProps, ...props }: I
       {...props}
     >
       {placeholder && <VariantPlaceholder variant={variant} />}
-      <Input data-testid='checklist-group-input' {...InputProps} />
+      <Input data-testid={dataTestId} {...InputProps} />
     </div>
   )
 }

@@ -17,6 +17,7 @@ type InputChecklistProps = BaseProps<
     isCloseIcon?: boolean
     onClose?: () => void
     queryInputValue?: (value: string) => void
+    dataTestId: string
   },
   'div'
 >
@@ -58,6 +59,7 @@ export const InputChecklist = ({
   queryInputValue,
   InputProps: { onChange, value = '', onBlur, defaultValue, onKeyPress, ...InputProps },
   CheckboxPros: { onChange: $checkboxOnChange, ...CheckboxProps },
+  dataTestId,
   ...props
 }: InputChecklistProps) => {
   const queryClient = useQueryClient()
@@ -117,9 +119,13 @@ export const InputChecklist = ({
     setInputValue(value as string)
   }, [value])
   return (
-    <div className={`w-full h-12 flex items-center relative ${className}`} {...props}>
+    <div data-testId={dataTestId} className={`w-full h-12 flex items-center relative ${className}`} {...props}>
       <div className='absolute z-10 mx-4 mt-1'>
-        <Checkbox onChange={handleCheckbox} {...CheckboxProps} />
+        <Checkbox
+          onChange={handleCheckbox}
+          aria-label={`checklist-${ariaLabel}-checkbox-on-drawer`}
+          {...CheckboxProps}
+        />
       </div>
       <Input
         onBlur={handleSendData}
@@ -130,7 +136,11 @@ export const InputChecklist = ({
       />
       {isCloseIcon && (
         <div className='absolute z-10 mx-4 right-0'>
-          <XCircleIcon onClick={onClose} className='h-4 w-4 text-gray-400 cursor-pointer hover:text-red-600' />
+          <XCircleIcon
+            data-testId='btn-remove-checklist-item'
+            onClick={onClose}
+            className='h-4 w-4 text-gray-400 cursor-pointer hover:text-red-600'
+          />
         </div>
       )}
     </div>
