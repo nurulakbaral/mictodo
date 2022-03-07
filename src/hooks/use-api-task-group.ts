@@ -1,18 +1,13 @@
 import * as React from 'react'
 import type { TChecklistGroupEntity } from '~/src/types'
-import type { PostgrestResponse } from '@supabase/supabase-js'
-import type { UseQueryOptions } from 'react-query'
+import type { PostgrestResponse, User } from '@supabase/supabase-js'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useToast } from '@chakra-ui/react'
 import { v4 as uuidv4 } from 'uuid'
 
-type AuthorizedUser = {
-  id: string
-  email?: string
-}
 type Verb = {
-  verb: 'insert' | 'update'
+  verb: 'INSERT' | 'UPDATE' | 'DELETE'
 }
 
 // Notes: Local utils
@@ -32,10 +27,12 @@ const modifiedEntity = ({
   freshEntity: TChecklistGroupEntity
 }) => {
   switch (verb) {
-    case 'insert':
+    case 'INSERT':
       return [...oldEntity, freshEntity]
-    case 'update':
-      return oldEntity.map((item: TChecklistGroupEntity) => (item.id === freshEntity.id ? freshEntity : item))
+    case 'UPDATE':
+      return oldEntity.map((oldItem: TChecklistGroupEntity) => (oldItem.id === freshEntity.id ? freshEntity : oldItem))
+    case 'DELETE':
+      return oldEntity.filter((oldItem: TChecklistGroupEntity) => oldItem.id !== freshEntity.id)
     default:
       return [{ error: 'Unsupported verb' }]
   }
@@ -54,7 +51,7 @@ const selectTaskGroup = async ({ queryKey }: { queryKey: Array<string | undefine
 }
 const modifiedTaskGroup = async ({ verb, ...taskGroupEntity }: Partial<TChecklistGroupEntity> & Verb) => {
   let response
-  if (verb === 'insert') {
+  if (verb === 'INSERT') {
     response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
       {
         title: taskGroupEntity.title,
@@ -64,26 +61,26 @@ const modifiedTaskGroup = async ({ verb, ...taskGroupEntity }: Partial<TChecklis
         user_id: taskGroupEntity.user_id,
       },
     ])
-  } else if (verb === 'update') {
+  } else if (verb === 'UPDATE') {
     response = await supabaseClient
       .from<TChecklistGroupEntity>('$DB_checklist_group')
       .update({ ...taskGroupEntity })
       .match({ id: taskGroupEntity.id })
+  } else if (verb === 'DELETE') {
+    response = await supabaseClient
+      .from<TChecklistGroupEntity>('$DB_checklist_group')
+      .delete()
+      .match({ id: taskGroupEntity.id })
   }
   return apiResponse(response as PostgrestResponse<TChecklistGroupEntity>)
 }
-export const useApiTaskGroup = (
-  authorizedUser: AuthorizedUser,
-  useQueryOptions?: Omit<
-    UseQueryOptions<unknown, unknown, PostgrestResponse<TChecklistGroupEntity>, string[]>,
-    'queryKey' | 'queryFn'
-  >,
-) => {
+export const useApiTaskGroup = () => {
   const renderToastComponent = useToast()
   const queryClient = useQueryClient()
+  const authorizedUser: User | undefined | null = queryClient.getQueryData('authorizedUser')
   // Notes: Select
   const taskGroupEntity = useQuery(['taskGroup', authorizedUser?.id], selectTaskGroup, {
-    ...useQueryOptions,
+    enabled: !!authorizedUser,
   })
   // Notes: Data Modified
   const taskGroupMutation = useMutation(modifiedTaskGroup, {

@@ -5,7 +5,7 @@ describe('Login', () => {
   })
   afterEach(() => {
     // Notes: .pause() is used to wait for the animation to finish (check your testis right)
-    cy.pause()
+    // cy.pause()
   })
   it('Login page looks good', () => {
     cy.contains('Mictodo')

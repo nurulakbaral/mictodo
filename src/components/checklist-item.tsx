@@ -2,9 +2,7 @@ import * as React from 'react'
 import type { BaseProps } from '~/src/types'
 import { Box, BoxProps, Text, TextProps, Checkbox, CheckboxProps } from '@chakra-ui/react'
 import type { TChecklistGroupEntity } from '~/src/types'
-import { useMutation, useQueryClient } from 'react-query'
-import { PostgrestResponse } from '@supabase/supabase-js'
-import { supabaseClient } from '~/src/libs/supabase-client'
+import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 
 type InputChecklistProps = BaseProps<
   {
@@ -16,20 +14,6 @@ type InputChecklistProps = BaseProps<
 > &
   BoxProps
 
-const updateChecklistGroup = async ({
-  id,
-  is_completed,
-}: Partial<Pick<TChecklistGroupEntity, 'id' | 'is_completed'>>) => {
-  const response = await supabaseClient
-    .from<TChecklistGroupEntity>('$DB_checklist_group')
-    .update({ is_completed })
-    .match({ id })
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-  return response
-}
-
 export const ChecklistItem = ({
   className,
   onClick,
@@ -38,25 +22,10 @@ export const ChecklistItem = ({
   TextProps = { className: 'font-poppins cursor-default', fontSize: 'lg' },
   ...props
 }: InputChecklistProps) => {
-  const queryClient = useQueryClient()
-  const { mutate } = useMutation(updateChecklistGroup, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
-      const [freshData] = freshQueryData.data || []
-      queryClient.setQueryData(['checklistGroup', checklisGroupEntity.user_id], (oldQueryData: any) => {
-        // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
-        const oldData = $oldQueryData.data || []
-        const updateOldData = (old: TChecklistGroupEntity) => (old.id === freshData.id ? freshData : old)
-        return {
-          ...$oldQueryData,
-          data: oldData.map(updateOldData),
-        }
-      })
-    },
-  })
+  const { taskGroupMutation } = useApiTaskGroup()
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked
-    mutate({ id: checklisGroupEntity.id, is_completed: isChecked })
+    taskGroupMutation.mutate({ id: checklisGroupEntity.id, is_completed: isChecked, verb: 'UPDATE' })
   }
   return (
     <Box
