@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import { theme } from '~/styles/theme'
 import type { AppProps } from 'next/app'
 import { QueryClientProvider, QueryClient } from 'react-query'
-// import { ReactQueryDevtools } from 'react-query/devtools'
+import { ReactQueryDevtools } from 'react-query/devtools'
 import { Layout } from '~/src/components/layout'
 import { LayoutContainer } from '~/src/components/layout-container'
 import { ChakraProvider } from '@chakra-ui/provider'
@@ -21,7 +21,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             </LayoutContainer>
           </Layout>
         </ChakraProvider>
-        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+        <ReactQueryDevtools initialIsOpen={false} />
       </Provider>
     </QueryClientProvider>
   )

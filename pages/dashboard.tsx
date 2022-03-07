@@ -12,6 +12,7 @@ import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupEntity } from '~/src/types'
 import { PostgrestResponse } from '@supabase/supabase-js'
+import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 
 type FormValues = {
   checklistGroup: string
@@ -44,6 +45,12 @@ export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading: isLoadingUser, isError } = useQuery('authorizedUser', selectAuthorizedUser)
+
+  const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup(
+    { id: authorizedUser?.id as string },
+    { enabled: !!authorizedUser },
+  )
+  console.log('🪲 - taskGroupEntity', taskGroupEntity)
   const checklistGroupEntity = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
     enabled: !!authorizedUser,
   })
@@ -83,7 +90,8 @@ export default function Dashboard() {
       alert('Please enter a task')
       return
     }
-    mutate({ user_id: authorizedUser?.id, title: values.checklistGroup })
+    // mutate({ user_id: authorizedUser?.id, title: values.checklistGroup })
+    taskGroupMutation.mutate({ user_id: authorizedUser?.id, title: values.checklistGroup, verb: 'insert' })
     reset({
       checklistGroup: '',
     })
@@ -132,7 +140,7 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <Box className='pt-12 pb-36'>
-          {checklistGroupEntity?.data?.data?.map((checklistGroup) => (
+          {taskGroupEntity?.data?.data?.map((checklistGroup) => (
             <ChecklistItem
               key={checklistGroup.id}
               checklisGroupEntity={checklistGroup}
