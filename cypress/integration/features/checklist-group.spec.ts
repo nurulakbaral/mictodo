@@ -53,16 +53,12 @@ describe('Checklist Group', () => {
   })
   it('Success checklist group checked', () => {
     cy.get('[data-testid=checklist-group-unit]').should('have.length', 3)
-    cy.get('[aria-label=checklist-group-checkbox]').each(($el, index) => {
-      if (index % 2 === 0) {
-        cy.wrap($el).check({ force: true })
-      }
+    cy.get('[aria-label=checklist-group-checkbox]').each(($el) => {
+      cy.wrap($el).check({ force: true })
     })
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[aria-label=checklist-group-checkbox]').each(($el, index) => {
-      if (index % 2 === 0) {
-        cy.wrap($el).should('be.checked')
-      }
+    cy.get('[aria-label=checklist-group-checkbox]').each(($el) => {
+      cy.wrap($el).should('be.checked')
     })
   })
   it('Success remove multiple checklist group', () => {

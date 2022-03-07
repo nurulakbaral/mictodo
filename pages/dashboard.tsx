@@ -1,81 +1,39 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
 import { DrawerChecklist } from '~/src/components/drawer-checklist'
-import { useDisclosure, Box, Text, useToast } from '@chakra-ui/react'
+import { useDisclosure, Box, Text } from '@chakra-ui/react'
 import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupEntity } from '~/src/types'
-import { PostgrestResponse } from '@supabase/supabase-js'
+import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 
 type FormValues = {
   checklistGroup: string
 }
 
-const insertChecklistGroup = async ({ user_id, title }: Partial<Pick<TChecklistGroupEntity, 'user_id' | 'title'>>) =>
-  await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
-    {
-      title,
-      description: '',
-      is_completed: false,
-      is_priority: false,
-      user_id,
-    },
-  ])
-const selectChecklistGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
-  const response = await supabaseClient.from('$DB_checklist_group').select('*').eq('user_id', queryKey[1])
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-  return response
-}
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
-
 export default function Dashboard() {
   const router = useRouter()
-  const queryClient = useQueryClient()
-  const renderToastComponent = useToast()
   const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const { data: authorizedUser, isLoading: isLoadingUser, isError } = useQuery('authorizedUser', selectAuthorizedUser)
-  const checklistGroupEntity = useQuery(['checklistGroup', authorizedUser?.id], selectChecklistGroup, {
-    enabled: !!authorizedUser,
-  })
-  const { mutate } = useMutation(insertChecklistGroup, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistGroupEntity>) => {
-      renderToastComponent({
-        title: 'Group-Task created.',
-        status: 'success',
-        duration: 800,
-        position: 'top',
-      })
-      const freshData = freshQueryData.data || []
-      queryClient.setQueryData(['checklistGroup', authorizedUser?.id], (oldQueryData: any) => {
-        // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
-        const oldData = $oldQueryData.data || []
-        return {
-          ...$oldQueryData,
-          data: [...oldData, ...freshData],
-        }
-      })
-    },
-  })
+  const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
+  const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup()
   const checklistGroupValue = watch('checklistGroup')
-  if (isLoadingUser || checklistGroupEntity.isLoading) {
+  if (isLoading) {
     return (
       <div className='pt-40'>
         <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
       </div>
     )
   }
-  if (isError || checklistGroupEntity.isError) {
+  if (isError) {
     return router.push('/404')
   }
   const handleAddChecklistGroup = async (values: FormValues) => {
@@ -83,7 +41,7 @@ export default function Dashboard() {
       alert('Please enter a task')
       return
     }
-    mutate({ user_id: authorizedUser?.id, title: values.checklistGroup })
+    taskGroupMutation.mutate({ user_id: authorizedUser?.id, title: values.checklistGroup, verb: 'INSERT' })
     reset({
       checklistGroup: '',
     })
@@ -132,7 +90,7 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <Box className='pt-12 pb-36'>
-          {checklistGroupEntity?.data?.data?.map((checklistGroup) => (
+          {taskGroupEntity?.data?.data?.map((checklistGroup) => (
             <ChecklistItem
               key={checklistGroup.id}
               checklisGroupEntity={checklistGroup}
@@ -174,7 +132,7 @@ export default function Dashboard() {
         </Box>
         <Box>
           {checklistGroup && (
-            <DrawerChecklist checklistGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+            <DrawerChecklist taskGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
           )}
         </Box>
       </main>
