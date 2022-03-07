@@ -70,10 +70,7 @@ const modifiedTaskGroup = async ({ verb, ...taskGroupEntity }: Partial<TChecklis
       .update({ ...taskGroupEntity })
       .match({ id: taskGroupEntity.id })
   }
-  if (response?.error) {
-    throw new Error(response.error.message)
-  }
-  return response
+  return apiResponse(response as PostgrestResponse<TChecklistGroupEntity>)
 }
 export const useApiTaskGroup = (
   authorizedUser: AuthorizedUser,
@@ -108,6 +105,7 @@ export const useApiTaskGroup = (
           data: modifiedEntity({
             verb,
             oldEntity: oldTaskGroupEntity,
+            // Notes: Because we use optimistic update, we need to add (fake) id to the new entity for temporary use
             freshEntity: { id: uuidv4(), ...freshTaskGroupEntity } as TChecklistGroupEntity,
           }),
         }
