@@ -3,16 +3,14 @@ import type { BaseProps } from '~/src/types'
 import { InputProps, Input, Checkbox, CheckboxProps } from '@chakra-ui/react'
 import { XCircleIcon } from '@heroicons/react/outline'
 import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
-import { PostgrestResponse } from '@supabase/supabase-js'
-import { supabaseClient } from '~/src/libs/supabase-client'
-import { useMutation, useQueryClient } from 'react-query'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
+import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
 
 type InputChecklistProps = BaseProps<
   {
     ariaLabel: 'group' | 'item'
     checklistItemId: string
-    checklisGroupEntity: TChecklistGroupEntity
+    taskGroup: TChecklistGroupEntity
     InputProps: InputProps
     CheckboxPros: CheckboxProps
     isCloseIcon?: boolean
@@ -23,24 +21,10 @@ type InputChecklistProps = BaseProps<
   'div'
 >
 
-const updateChecklistItem = async ({
-  id,
-  is_completed,
-}: Partial<Pick<TChecklistItemEntity, 'id' | 'is_completed'>>) => {
-  const response = await supabaseClient
-    .from<TChecklistItemEntity>('$DB_checklist_item')
-    .update({ is_completed })
-    .match({ id })
-  if (response.error) {
-    throw new Error(response.error.message)
-  }
-  return response
-}
-
 export const InputChecklist = ({
   ariaLabel,
   checklistItemId,
-  checklisGroupEntity,
+  taskGroup,
   className,
   isCloseIcon = false,
   onClose,
@@ -50,28 +34,13 @@ export const InputChecklist = ({
   dataTestId,
   ...props
 }: InputChecklistProps) => {
-  const queryClient = useQueryClient()
   const { taskGroupMutation } = useApiTaskGroup()
-  const { mutate } = useMutation(updateChecklistItem, {
-    onSuccess: (freshQueryData: PostgrestResponse<TChecklistItemEntity>) => {
-      const [freshData] = freshQueryData.data || []
-      queryClient.setQueryData(['checklistItem', checklisGroupEntity.id], (oldQueryData: any) => {
-        // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
-        const oldData = $oldQueryData.data || []
-        const updateOldData = (old: TChecklistItemEntity) => (old.id === freshData.id ? freshData : old)
-        return {
-          ...$oldQueryData,
-          data: oldData.map(updateOldData),
-        }
-      })
-    },
-  })
+  const { taskItemMutation } = useApiTaskItem(taskGroup)
   const [inputValue, setInputValue] = React.useState('')
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked
     ariaLabel === 'item'
-      ? mutate({ id: checklistItemId, is_completed: isChecked })
+      ? taskItemMutation.mutate({ id: checklistItemId, is_completed: isChecked, verb: 'UPDATE' })
       : taskGroupMutation.mutate({ id: checklistItemId, is_completed: isChecked, verb: 'UPDATE' })
   }
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
