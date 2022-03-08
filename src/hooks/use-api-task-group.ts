@@ -1,38 +1,38 @@
 import * as React from 'react'
-import type { TChecklistGroupEntity } from '~/src/types'
+import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import type { PostgrestResponse, User } from '@supabase/supabase-js'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useToast } from '@chakra-ui/react'
 import { v4 as uuidv4 } from 'uuid'
 
-type Verb = {
+type TTaskEntity = TChecklistGroupEntity | TChecklistItemEntity
+export type Verb = {
   verb: 'INSERT' | 'UPDATE' | 'DELETE'
 }
 
-// Notes: Local utils
-const apiResponse = <T extends PostgrestResponse<TChecklistGroupEntity>>(response: T) => {
+export const apiResponse = <T extends PostgrestResponse<TTaskEntity>>(response: T) => {
   if (response.error) {
     throw new Error(response.error.message)
   }
   return response
 }
-const modifiedEntity = ({
+export const modifiedEntity = ({
   verb,
   oldEntity,
   freshEntity,
 }: {
   verb: string
-  oldEntity: Array<TChecklistGroupEntity>
-  freshEntity: TChecklistGroupEntity
+  oldEntity: Array<TTaskEntity>
+  freshEntity: TTaskEntity
 }) => {
   switch (verb) {
     case 'INSERT':
       return [...oldEntity, freshEntity]
     case 'UPDATE':
-      return oldEntity.map((oldItem: TChecklistGroupEntity) => (oldItem.id === freshEntity.id ? freshEntity : oldItem))
+      return oldEntity.map((oldItem: TTaskEntity) => (oldItem.id === freshEntity.id ? freshEntity : oldItem))
     case 'DELETE':
-      return oldEntity.filter((oldItem: TChecklistGroupEntity) => oldItem.id !== freshEntity.id)
+      return oldEntity.filter((oldItem: TTaskEntity) => oldItem.id !== freshEntity.id)
     default:
       return [{ error: 'Unsupported verb' }]
   }
@@ -51,29 +51,34 @@ const selectTaskGroup = async ({ queryKey }: { queryKey: Array<string | undefine
 }
 const modifiedTaskGroup = async ({ verb, ...taskGroupEntity }: Partial<TChecklistGroupEntity> & Verb) => {
   let response
-  if (verb === 'INSERT') {
-    response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
-      {
-        title: taskGroupEntity.title,
-        description: '',
-        is_completed: false,
-        is_priority: false,
-        user_id: taskGroupEntity.user_id,
-      },
-    ])
-  } else if (verb === 'UPDATE') {
-    response = await supabaseClient
-      .from<TChecklistGroupEntity>('$DB_checklist_group')
-      .update({ ...taskGroupEntity })
-      .match({ id: taskGroupEntity.id })
-  } else if (verb === 'DELETE') {
-    response = await supabaseClient
-      .from<TChecklistGroupEntity>('$DB_checklist_group')
-      .delete()
-      .match({ id: taskGroupEntity.id })
+  switch (verb) {
+    case 'INSERT':
+      response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
+        {
+          title: taskGroupEntity.title,
+          description: '',
+          is_completed: false,
+          is_priority: false,
+          user_id: taskGroupEntity.user_id,
+        },
+      ])
+      break
+    case 'UPDATE':
+      response = await supabaseClient
+        .from<TChecklistGroupEntity>('$DB_checklist_group')
+        .update({ ...taskGroupEntity })
+        .match({ id: taskGroupEntity.id })
+      break
+    case 'DELETE':
+      response = await supabaseClient
+        .from<TChecklistGroupEntity>('$DB_checklist_group')
+        .delete()
+        .match({ id: taskGroupEntity.id })
+      break
   }
-  return apiResponse(response as PostgrestResponse<TChecklistGroupEntity>)
+  return apiResponse(response)
 }
+
 export const useApiTaskGroup = () => {
   const renderToastComponent = useToast()
   const queryClient = useQueryClient()
@@ -88,7 +93,7 @@ export const useApiTaskGroup = () => {
       await queryClient.cancelQueries(['taskGroup', authorizedUser?.id])
       const prevTaskGroupEntity = queryClient.getQueryData(['taskGroup', authorizedUser?.id])
       renderToastComponent({
-        title: 'Task-Group created.',
+        title: 'Success!',
         status: 'success',
         duration: 800,
         position: 'top',
@@ -111,8 +116,8 @@ export const useApiTaskGroup = () => {
     },
     onError: (_err, _newTodo, context) => {
       renderToastComponent({
-        title: 'Failed to delete TaskGroup!',
-        description: 'Delete the Item-Task, then try again to delete the TaskGroup.',
+        title: 'Failed!',
+        description: 'Delete the Task-Item, then try again to delete the Task-Group.',
         status: 'error',
         duration: null,
         isClosable: true,
@@ -120,7 +125,7 @@ export const useApiTaskGroup = () => {
       })
       queryClient.setQueryData(['taskGroup', authorizedUser?.id], context?.prevTaskGroupEntity)
     },
-    onSettled: () => {
+    onSettled: (_entity, error, _freshEntity, _context) => {
       queryClient.invalidateQueries(['taskGroup', authorizedUser?.id])
     },
   })
