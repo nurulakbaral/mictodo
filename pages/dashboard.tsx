@@ -24,7 +24,6 @@ export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
-  console.log('🪲 - authorizedUser', authorizedUser)
   const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup()
   const checklistGroupValue = watch('checklistGroup')
   if (isLoading || authorizedUser === undefined) {

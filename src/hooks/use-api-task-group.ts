@@ -92,13 +92,6 @@ export const useApiTaskGroup = () => {
     onMutate: async ({ verb, ...freshTaskGroupEntity }: Partial<TChecklistGroupEntity> & Verb) => {
       await queryClient.cancelQueries(['taskGroup', authorizedUser?.id])
       const prevTaskGroupEntity = queryClient.getQueryData(['taskGroup', authorizedUser?.id])
-      // Notes: For temoprary disable
-      // renderToastComponent({
-      //   title: 'Success!',
-      //   status: 'success',
-      //   duration: 800,
-      //   position: 'top',
-      // })
       queryClient.setQueryData(['taskGroup', authorizedUser?.id], (oldQueryData: any) => {
         // Notes: $oldQueryData variable is only used to get type oldQueryData
         const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
