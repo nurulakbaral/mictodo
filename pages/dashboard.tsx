@@ -24,9 +24,10 @@ export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
+  console.log('🪲 - authorizedUser', authorizedUser)
   const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup()
   const checklistGroupValue = watch('checklistGroup')
-  if (isLoading) {
+  if (isLoading || authorizedUser === undefined) {
     return (
       <div className='pt-40'>
         <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
