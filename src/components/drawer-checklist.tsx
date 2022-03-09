@@ -29,12 +29,7 @@ type FormValues = {
   checklistItem: string
 }
 
-export const DrawerChecklist = ({
-  taskGroup,
-  isOpen = false,
-  onClose = () => {},
-  placement = 'right',
-}: DrawerChecklistProps) => {
+const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 'right' }: DrawerChecklistProps) => {
   const { taskGroupMutation } = useApiTaskGroup()
   const { taskItemEntity, taskItemMutation } = useApiTaskItem(taskGroup)
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
@@ -188,3 +183,6 @@ export const DrawerChecklist = ({
     </Drawer>
   )
 }
+
+export const DrawerChecklist = React.memo(Component)
+DrawerChecklist.displayName = 'DrawerChecklist'
