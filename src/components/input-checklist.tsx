@@ -40,8 +40,8 @@ export const InputChecklist = ({
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked
     ariaLabel === 'item'
-      ? taskItemMutation.mutate({ id: checklistItemId, is_completed: isChecked, verb: 'UPDATE' })
-      : taskGroupMutation.mutate({ id: checklistItemId, is_completed: isChecked, verb: 'UPDATE' })
+      ? taskItemMutation.mutate({ id: checklistItemId, is_completed: isChecked, $options: { verb: 'UPDATE' } })
+      : taskGroupMutation.mutate({ id: checklistItemId, is_completed: isChecked, $options: { verb: 'UPDATE' } })
   }
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value)

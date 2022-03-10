@@ -25,7 +25,7 @@ export const ChecklistItem = ({
   const { taskGroupMutation } = useApiTaskGroup()
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = e.target.checked
-    taskGroupMutation.mutate({ id: checklisGroupEntity.id, is_completed: isChecked, verb: 'UPDATE' })
+    taskGroupMutation.mutate({ id: checklisGroupEntity.id, is_completed: isChecked, $options: { verb: 'UPDATE' } })
   }
   return (
     <Box

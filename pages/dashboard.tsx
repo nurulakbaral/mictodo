@@ -41,7 +41,11 @@ export default function Dashboard() {
       alert('Please enter a task')
       return
     }
-    taskGroupMutation.mutate({ user_id: authorizedUser?.id, title: values.checklistGroup, verb: 'INSERT' })
+    taskGroupMutation.mutate({
+      user_id: authorizedUser?.id,
+      title: values.checklistGroup,
+      $options: { verb: 'INSERT' },
+    })
     reset({
       checklistGroup: '',
     })
@@ -116,7 +120,7 @@ export default function Dashboard() {
             onSubmit={handleSubmit(handleAddChecklistGroup)}
           >
             <InputTask
-              variant='Add Group-Task'
+              variant='Add Task-Group'
               value={checklistGroupValue}
               dataTestId='checklist-group-input'
               InputProps={{
