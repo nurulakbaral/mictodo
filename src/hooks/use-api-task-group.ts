@@ -4,7 +4,6 @@ import type { PostgrestResponse, User } from '@supabase/supabase-js'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useToast } from '@chakra-ui/react'
-import { v4 as uuidv4 } from 'uuid'
 
 type TTaskEntity = TChecklistGroupEntity | TChecklistItemEntity
 export type Verb = {
@@ -87,28 +86,29 @@ export const useApiTaskGroup = () => {
   const taskGroupEntity = useQuery(['taskGroup', authorizedUser?.id], selectTaskGroup, {
     enabled: !!authorizedUser,
   })
-  // Notes: Data Modified
+  // Notes: Modify data (INSERT, UPDATE, DELETE)
   const taskGroupMutation = useMutation(modifiedTaskGroup, {
-    onMutate: async ({ verb, ...freshTaskGroupEntity }: Partial<TChecklistGroupEntity> & Verb) => {
-      await queryClient.cancelQueries(['taskGroup', authorizedUser?.id])
-      const prevTaskGroupEntity = queryClient.getQueryData(['taskGroup', authorizedUser?.id])
-      queryClient.setQueryData(['taskGroup', authorizedUser?.id], (oldQueryData: any) => {
-        // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistGroupEntity> = { ...oldQueryData }
-        const oldTaskGroupEntity = $oldQueryData.data || []
+    onSuccess: (
+      freshResponse: PostgrestResponse<TChecklistGroupEntity>,
+      argsTaskGroupEntity: Partial<TChecklistGroupEntity> & Verb,
+    ) => {
+      const { verb } = argsTaskGroupEntity
+      const freshTaskGroupEntity = freshResponse?.data || []
+      queryClient.setQueryData(['taskGroup', authorizedUser?.id], (staleResponse: any) => {
+        // Notes: $staleResponse variable is only used to get type staleResponse
+        const $staleResponse: PostgrestResponse<TChecklistGroupEntity> = { ...staleResponse }
+        const staleTaskGroupEntity = $staleResponse.data || []
         return {
-          ...$oldQueryData,
+          ...$staleResponse,
           data: modifiedEntity({
             verb,
-            oldEntity: oldTaskGroupEntity,
-            // Notes: Because we use optimistic update, we need to add (fake) id to the new entity for temporary use
-            freshEntity: { id: uuidv4(), ...freshTaskGroupEntity } as TChecklistGroupEntity,
+            oldEntity: staleTaskGroupEntity,
+            freshEntity: freshTaskGroupEntity[0],
           }),
         }
       })
-      return { prevTaskGroupEntity }
     },
-    onError: (_err, _newTodo, context) => {
+    onError: (_err, _newTodo, _context) => {
       renderToastComponent({
         title: 'Failed!',
         description: 'Delete the Task-Item, then try again to delete the Task-Group.',
@@ -117,10 +117,6 @@ export const useApiTaskGroup = () => {
         isClosable: true,
         position: 'top',
       })
-      queryClient.setQueryData(['taskGroup', authorizedUser?.id], context?.prevTaskGroupEntity)
-    },
-    onSettled: (_entity, error, _freshEntity, _context) => {
-      queryClient.invalidateQueries(['taskGroup', authorizedUser?.id])
     },
   })
   return { taskGroupEntity, taskGroupMutation }
