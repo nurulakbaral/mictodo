@@ -4,7 +4,6 @@ import type { PostgrestResponse } from '@supabase/supabase-js'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useToast } from '@chakra-ui/react'
-import { v4 as uuidv4 } from 'uuid'
 import { TOptions, modifiedEntity, apiResponse } from '~/src/hooks/use-api-task-group'
 
 // Notes: Supabase fetch
@@ -53,35 +52,31 @@ export const useApiTaskItem = (taskGroup: TChecklistGroupEntity) => {
   })
   // Notes: Data Modified
   const taskItemMutation = useMutation(modifiedTaskItem, {
-    onMutate: async ({ $options, ...freshTaskItemEntity }: Partial<TChecklistItemEntity> & TOptions) => {
-      const { verb } = $options
-      await queryClient.cancelQueries(['taskItem', taskGroup?.id])
-      const prevTaskItemEntity = queryClient.getQueryData(['taskItem', taskGroup?.id])
-      queryClient.setQueryData(['taskItem', taskGroup?.id], (oldQueryData: any) => {
-        // Notes: $oldQueryData variable is only used to get type oldQueryData
-        const $oldQueryData: PostgrestResponse<TChecklistItemEntity> = { ...oldQueryData }
-        const oldTaskItemEntity = $oldQueryData.data || []
+    onSuccess: (
+      freshResponse: PostgrestResponse<TChecklistItemEntity>,
+      argsTaskItemEntity: Partial<TChecklistItemEntity> & TOptions,
+    ) => {
+      const { verb } = argsTaskItemEntity.$options
+      const freshTaskItemEntity = freshResponse?.data || []
+      queryClient.setQueryData(['taskItem', taskGroup?.id], (staleResponse: any) => {
+        // Notes: $staleResponse variable is only used to get type staleResponse
+        const $staleResponse: PostgrestResponse<TChecklistItemEntity> = { ...staleResponse }
+        const staleTaskItemEntity = $staleResponse.data || []
         return {
-          ...$oldQueryData,
+          ...$staleResponse,
           data: modifiedEntity({
             verb,
-            oldEntity: oldTaskItemEntity,
-            // Notes: Because we use optimistic update, we need to add (fake) id to the new entity for temporary use
-            freshEntity: { id: uuidv4(), ...freshTaskItemEntity } as TChecklistItemEntity,
+            oldEntity: staleTaskItemEntity,
+            freshEntity: freshTaskItemEntity[0],
           }),
         }
       })
-      return { prevTaskItemEntity }
     },
-    onError: (_err, argsTaskItemEntity, context) => {
+    onError: (_err, argsTaskItemEntity, _context) => {
       const { alertInfo } = argsTaskItemEntity.$options
       renderToastComponent({
         ...alertInfo?.onError,
       })
-      queryClient.setQueryData(['taskItem', taskGroup?.id], context?.prevTaskItemEntity)
-    },
-    onSettled: (_entity, _error, _variables, _context) => {
-      queryClient.invalidateQueries(['taskItem', taskGroup?.id])
     },
   })
   return { taskItemEntity, taskItemMutation }
