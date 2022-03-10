@@ -118,7 +118,15 @@ export const useApiTaskGroup = () => {
     },
     onError: (_err, argsTaskGroupEntity, _context) => {
       const { alertInfo } = argsTaskGroupEntity.$options
+      const defaultInfo: UseToastOptions = {
+        title: 'Error',
+        status: 'error',
+        duration: null,
+        isClosable: true,
+        position: 'top',
+      }
       renderToastComponent({
+        ...defaultInfo,
         ...alertInfo?.onError,
       })
     },

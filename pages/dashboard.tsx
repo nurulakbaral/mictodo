@@ -120,7 +120,7 @@ export default function Dashboard() {
             onSubmit={handleSubmit(handleAddChecklistGroup)}
           >
             <InputTask
-              variant='Add Group-Task'
+              variant='Add Task-Group'
               value={checklistGroupValue}
               dataTestId='checklist-group-input'
               InputProps={{

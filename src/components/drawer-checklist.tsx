@@ -38,7 +38,18 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
   const handleUpdateTaskGroup = (title: string) =>
     taskGroupMutation.mutate({ id: taskGroup.id, title, $options: { verb: 'UPDATE' } })
   const handleDeleteTaskGroup = () => {
-    taskGroupMutation.mutate({ id: taskGroup.id, $options: { verb: 'DELETE' } })
+    taskGroupMutation.mutate({
+      id: taskGroup.id,
+      $options: {
+        verb: 'DELETE',
+        alertInfo: {
+          onError: {
+            title: 'Failed to delete Task-Group!',
+            description: 'Delete the Task-Item, then try again to delete the Task-Group.',
+          },
+        },
+      },
+    })
     onClose()
   }
   const handleUpdateTaskGroupDesc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -142,7 +153,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
               ))}
             <form data-testid='checklist-item-form' className='mx-auto mt-1' onSubmit={handleSubmit(handleAddTaskItem)}>
               <InputTask
-                variant='Add Item-Task'
+                variant='Add Task-Item'
                 className='w-full'
                 value={taskValue}
                 dataTestId='checklist-item-input'
