@@ -3,11 +3,18 @@ import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import type { PostgrestResponse, User } from '@supabase/supabase-js'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { useToast } from '@chakra-ui/react'
+import { useToast, UseToastOptions } from '@chakra-ui/react'
 
 type TTaskEntity = TChecklistGroupEntity | TChecklistItemEntity
-export type Verb = {
-  verb: 'INSERT' | 'UPDATE' | 'DELETE'
+export type TVerb = 'INSERT' | 'UPDATE' | 'DELETE'
+export type TOptions = {
+  $options: {
+    verb: TVerb
+    alertInfo?: {
+      onSuccess?: UseToastOptions
+      onError?: UseToastOptions
+    }
+  }
 }
 
 export const apiResponse = <T extends PostgrestResponse<TTaskEntity>>(response: T) => {
@@ -48,8 +55,9 @@ const selectTaskGroup = async ({ queryKey }: { queryKey: Array<string | undefine
   }
   return apiResponse(response)
 }
-const modifiedTaskGroup = async ({ verb, ...taskGroupEntity }: Partial<TChecklistGroupEntity> & Verb) => {
+const modifiedTaskGroup = async ({ $options, ...taskGroupEntity }: Partial<TChecklistGroupEntity> & TOptions) => {
   let response
+  const { verb } = $options
   switch (verb) {
     case 'INSERT':
       response = await supabaseClient.from<TChecklistGroupEntity>('$DB_checklist_group').insert([
@@ -90,9 +98,9 @@ export const useApiTaskGroup = () => {
   const taskGroupMutation = useMutation(modifiedTaskGroup, {
     onSuccess: (
       freshResponse: PostgrestResponse<TChecklistGroupEntity>,
-      argsTaskGroupEntity: Partial<TChecklistGroupEntity> & Verb,
+      argsTaskGroupEntity: Partial<TChecklistGroupEntity> & TOptions,
     ) => {
-      const { verb } = argsTaskGroupEntity
+      const { verb } = argsTaskGroupEntity.$options
       const freshTaskGroupEntity = freshResponse?.data || []
       queryClient.setQueryData(['taskGroup', authorizedUser?.id], (staleResponse: any) => {
         // Notes: $staleResponse variable is only used to get type staleResponse
@@ -108,14 +116,10 @@ export const useApiTaskGroup = () => {
         }
       })
     },
-    onError: (_err, _newTodo, _context) => {
+    onError: (_err, argsTaskGroupEntity, _context) => {
+      const { alertInfo } = argsTaskGroupEntity.$options
       renderToastComponent({
-        title: 'Failed!',
-        description: 'Delete the Task-Item, then try again to delete the Task-Group.',
-        status: 'error',
-        duration: null,
-        isClosable: true,
-        position: 'top',
+        ...alertInfo?.onError,
       })
     },
   })

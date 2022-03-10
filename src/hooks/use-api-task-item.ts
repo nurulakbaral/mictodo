@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { useToast } from '@chakra-ui/react'
 import { v4 as uuidv4 } from 'uuid'
-import { Verb, modifiedEntity, apiResponse } from '~/src/hooks/use-api-task-group'
+import { TOptions, modifiedEntity, apiResponse } from '~/src/hooks/use-api-task-group'
 
 // Notes: Supabase fetch
 const selectTaskItem = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
@@ -15,8 +15,9 @@ const selectTaskItem = async ({ queryKey }: { queryKey: Array<string | undefined
     .eq('checklist_group_id', queryKey[1])
   return apiResponse(response)
 }
-const modifiedTaskItem = async ({ verb, ...taskItemEntity }: Partial<TChecklistItemEntity> & Verb) => {
+const modifiedTaskItem = async ({ $options, ...taskItemEntity }: Partial<TChecklistItemEntity> & TOptions) => {
   let response
+  const { verb } = $options
   switch (verb) {
     case 'INSERT':
       response = await supabaseClient.from<TChecklistItemEntity>('$DB_checklist_item').insert([
@@ -52,7 +53,8 @@ export const useApiTaskItem = (taskGroup: TChecklistGroupEntity) => {
   })
   // Notes: Data Modified
   const taskItemMutation = useMutation(modifiedTaskItem, {
-    onMutate: async ({ verb, ...freshTaskItemEntity }: Partial<TChecklistItemEntity> & Verb) => {
+    onMutate: async ({ $options, ...freshTaskItemEntity }: Partial<TChecklistItemEntity> & TOptions) => {
+      const { verb } = $options
       await queryClient.cancelQueries(['taskItem', taskGroup?.id])
       const prevTaskItemEntity = queryClient.getQueryData(['taskItem', taskGroup?.id])
       queryClient.setQueryData(['taskItem', taskGroup?.id], (oldQueryData: any) => {
@@ -71,13 +73,10 @@ export const useApiTaskItem = (taskGroup: TChecklistGroupEntity) => {
       })
       return { prevTaskItemEntity }
     },
-    onError: (_err, _newTodo, context) => {
+    onError: (_err, argsTaskItemEntity, context) => {
+      const { alertInfo } = argsTaskItemEntity.$options
       renderToastComponent({
-        title: 'Failed',
-        status: 'error',
-        duration: null,
-        isClosable: true,
-        position: 'top',
+        ...alertInfo?.onError,
       })
       queryClient.setQueryData(['taskItem', taskGroup?.id], context?.prevTaskItemEntity)
     },

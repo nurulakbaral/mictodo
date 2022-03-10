@@ -41,7 +41,11 @@ export default function Dashboard() {
       alert('Please enter a task')
       return
     }
-    taskGroupMutation.mutate({ user_id: authorizedUser?.id, title: values.checklistGroup, verb: 'INSERT' })
+    taskGroupMutation.mutate({
+      user_id: authorizedUser?.id,
+      title: values.checklistGroup,
+      $options: { verb: 'INSERT' },
+    })
     reset({
       checklistGroup: '',
     })

@@ -35,19 +35,20 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const taskValue = watch('checklistItem')
   // Notes: Task Group Cases
-  const handleUpdateTaskGroup = (title: string) => taskGroupMutation.mutate({ id: taskGroup.id, title, verb: 'UPDATE' })
+  const handleUpdateTaskGroup = (title: string) =>
+    taskGroupMutation.mutate({ id: taskGroup.id, title, $options: { verb: 'UPDATE' } })
   const handleDeleteTaskGroup = () => {
-    taskGroupMutation.mutate({ id: taskGroup.id, verb: 'DELETE' })
+    taskGroupMutation.mutate({ id: taskGroup.id, $options: { verb: 'DELETE' } })
     onClose()
   }
   const handleUpdateTaskGroupDesc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const description = e.target.value
-    taskGroupMutation.mutate({ id: taskGroup.id, description, verb: 'UPDATE' })
+    taskGroupMutation.mutate({ id: taskGroup.id, description, $options: { verb: 'UPDATE' } })
   }
   const handleUpdateTaskGroupDescWithEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const description = e.currentTarget.value
     if (e.key === 'Enter') {
-      taskGroupMutation.mutate({ id: taskGroup.id, description, verb: 'UPDATE' })
+      taskGroupMutation.mutate({ id: taskGroup.id, description, $options: { verb: 'UPDATE' } })
     }
   }
   // Notes: Task Item Cases
@@ -57,18 +58,22 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       return
     }
     if (taskGroup) {
-      taskItemMutation.mutate({ checklist_group_id: taskGroup.id, title: values.checklistItem, verb: 'INSERT' })
+      taskItemMutation.mutate({
+        checklist_group_id: taskGroup.id,
+        title: values.checklistItem,
+        $options: { verb: 'INSERT' },
+      })
     }
     reset({
       checklistItem: '',
     })
   }
   const handleDeleteTaskItem = (checklisItemId: string) => {
-    taskItemMutation.mutate({ id: checklisItemId, verb: 'DELETE' })
+    taskItemMutation.mutate({ id: checklisItemId, $options: { verb: 'DELETE' } })
   }
   const handleUpdateTaskItem = (id: string) => {
     return (title: string) => {
-      taskItemMutation.mutate({ id, title, verb: 'UPDATE' })
+      taskItemMutation.mutate({ id, title, $options: { verb: 'UPDATE' } })
     }
   }
   return (
