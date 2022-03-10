@@ -3,7 +3,7 @@ import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import type { PostgrestResponse } from '@supabase/supabase-js'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { useToast } from '@chakra-ui/react'
+import { useToast, UseToastOptions } from '@chakra-ui/react'
 import { TOptions, modifiedEntity, apiResponse } from '~/src/hooks/use-api-task-group'
 
 // Notes: Supabase fetch
@@ -50,7 +50,7 @@ export const useApiTaskItem = (taskGroup: TChecklistGroupEntity) => {
   const taskItemEntity = useQuery(['taskItem', taskGroup?.id], selectTaskItem, {
     enabled: !!taskGroup,
   })
-  // Notes: Data Modified
+  // Notes: Modify data (INSERT, UPDATE, DELETE)
   const taskItemMutation = useMutation(modifiedTaskItem, {
     onSuccess: (
       freshResponse: PostgrestResponse<TChecklistItemEntity>,
@@ -74,7 +74,15 @@ export const useApiTaskItem = (taskGroup: TChecklistGroupEntity) => {
     },
     onError: (_err, argsTaskItemEntity, _context) => {
       const { alertInfo } = argsTaskItemEntity.$options
+      const defaultInfo: UseToastOptions = {
+        title: 'Error',
+        status: 'error',
+        duration: null,
+        isClosable: true,
+        position: 'top',
+      }
       renderToastComponent({
+        ...defaultInfo,
         ...alertInfo?.onError,
       })
     },
