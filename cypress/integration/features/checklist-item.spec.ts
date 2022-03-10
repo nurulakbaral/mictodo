@@ -1,10 +1,10 @@
 describe('Checklist Item', () => {
   const waitTimeBeforeAssert: number = 2000
   beforeEach(() => {
-    cy.then(() => {
+    cy.then(async () => {
       window.localStorage.setItem(Cypress.env('localStorageKey'), Cypress.env('localStorageValue'))
+      cy.visit('http://localhost:3000/dashboard')
     })
-    cy.visit('http://localhost:3000/dashboard')
     cy.viewport(1280, 1000)
   })
   afterEach(() => {

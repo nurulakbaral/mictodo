@@ -21,10 +21,10 @@ describe('Login', () => {
   })
   it('Authorized user', () => {
     // Notes: Get user data (manual assignt)
-    cy.then(() => {
+    cy.then(async () => {
       window.localStorage.setItem(Cypress.env('localStorageKey'), Cypress.env('localStorageValue'))
+      cy.visit('http://localhost:3000/dashboard')
     })
-    cy.visit('http://localhost:3000/dashboard')
     cy.contains('Hallo')
   })
 })
