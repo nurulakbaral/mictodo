@@ -12,6 +12,7 @@ import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
+import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 
 type FormValues = {
   checklistGroup: string
@@ -21,6 +22,7 @@ const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
   const router = useRouter()
   const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
+  const [isPriority, setIsPriority] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
@@ -35,6 +37,9 @@ export default function Dashboard() {
   }
   if (isError) {
     return router.push('/404')
+  }
+  const handleIsPriority = () => {
+    setIsPriority(!isPriority)
   }
   const handleAddChecklistGroup = async (values: FormValues) => {
     if (values.checklistGroup === '') {
@@ -94,6 +99,12 @@ export default function Dashboard() {
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <Box className='pt-12 pb-36'>
+          {/* <TextFieldTaskGroup
+            isPriority={isPriority}
+            boxIconProps={{
+              onClick: handleIsPriority,
+            }}
+          /> */}
           {taskGroupEntity?.data?.data?.map((checklistGroup) => (
             <ChecklistItem
               key={checklistGroup.id}

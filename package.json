@@ -11,9 +11,12 @@
     "format": "prettier --write \"{pages,src,archives}/**/*.{js,jsx,ts,tsx}\""
   },
   "dependencies": {
+    "@chakra-ui/icons": "^1.1.7",
     "@chakra-ui/react": "^1.8.3",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@fontsource/cairo": "^4.5.5",
+    "@fontsource/poppins": "^4.5.2",
     "@heroicons/react": "^1.0.5",
     "@reduxjs/toolkit": "^1.7.2",
     "@supabase/supabase-js": "^1.30.0",
