@@ -26,6 +26,7 @@ export const TextFieldTaskGroup = ({
 }: TextFieldTaskGroupProps) => {
   return (
     <HStack
+      aria-label='h-stack-component'
       mx={'4'}
       justifyContent={'space-between'}
       alignItems={'center'}
@@ -36,11 +37,20 @@ export const TextFieldTaskGroup = ({
       {...stackProps}
     >
       {/* Notes: Checkbox */}
-      <Box h={'12'} display='flex' justifyContent={'center'} alignItems='center' px={'4'} {...boxCheckboxProps}>
+      <Box
+        aria-label='box-checkbox-component'
+        h={'12'}
+        display='flex'
+        justifyContent={'center'}
+        alignItems='center'
+        px={'4'}
+        {...boxCheckboxProps}
+      >
         <Checkbox colorScheme={'twGray'} size={'lg'} {...checkboxProps} />
       </Box>
       {/* Notes: Field */}
       <Box
+        aria-label='box-field-component'
         // Notes: Marginleft is used to remove behave
         style={{ marginLeft: 0 }}
         flexGrow={1}
@@ -55,6 +65,7 @@ export const TextFieldTaskGroup = ({
       </Box>
       {/* Notes: Icon */}
       <Box
+        aria-label='box-icon-component'
         // Notes: Marginleft is used to remove behave
         style={{ marginLeft: 0 }}
         h={'12'}
