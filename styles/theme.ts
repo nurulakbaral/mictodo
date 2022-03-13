@@ -15,4 +15,8 @@ export const theme = extendTheme({
       900: '#111827',
     },
   },
+  fonts: {
+    heading: 'Cairo, sans-serif',
+    body: 'Poppins, sans-serif',
+  },
 })
