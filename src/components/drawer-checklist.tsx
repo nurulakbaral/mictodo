@@ -23,6 +23,7 @@ import { InputTask } from '~/src/components/input-task'
 import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
+import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
 
 type DrawerChecklistProps = { taskGroup: TChecklistGroupEntity } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 type FormValues = {
@@ -99,6 +100,8 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
         </DrawerHeader>
         <DrawerBody>
           <Box mb={6}>
+            {/* <TextFieldTaskItem /> */}
+            <br />
             {/* Parent */}
             <InputChecklist
               dataTestId='checklist-group-unit-on-drawer'

@@ -13,6 +13,7 @@ type TextFieldTaskGroupProps = {
   iconProps?: IconProps
   isPriority: boolean
 }
+
 export const TextFieldTaskGroup = ({
   stackProps,
   boxCheckboxProps,
