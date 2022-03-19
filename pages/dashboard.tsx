@@ -12,7 +12,6 @@ import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
-import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 
 type FormValues = {
   checklistGroup: string
@@ -22,7 +21,6 @@ const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
   const router = useRouter()
   const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
-  const [isPriority, setIsPriority] = useState(false)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { register, handleSubmit, watch, reset } = useForm<FormValues>()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
@@ -38,10 +36,7 @@ export default function Dashboard() {
   if (isError) {
     return router.push('/404')
   }
-  const handleIsPriority = () => {
-    setIsPriority(!isPriority)
-  }
-  const handleAddChecklistGroup = async (values: FormValues) => {
+  const handleAddTaskGroup = async (values: FormValues) => {
     if (values.checklistGroup === '') {
       alert('Please enter a task')
       return
@@ -55,7 +50,7 @@ export default function Dashboard() {
       checklistGroup: '',
     })
   }
-  const handleShowDetailChecklist = (checklistGroup: TChecklistGroupEntity) => {
+  const handleShowDetailTaskGroup = (checklistGroup: TChecklistGroupEntity) => {
     return () => {
       setChecklistGroup(checklistGroup)
       onOpen()
@@ -93,29 +88,23 @@ export default function Dashboard() {
       <Head>
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
-      <main className='pt-12'>
+      <Box pt={8}>
         <Box>
           <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
           <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
         </Box>
         <Box className='pt-12 pb-36'>
-          {/* <TextFieldTaskGroup
-            isPriority={isPriority}
-            boxIconProps={{
-              onClick: handleIsPriority,
-            }}
-          /> */}
-          {taskGroupEntity?.data?.data?.map((checklistGroup) => (
+          {taskGroupEntity?.data?.data?.map((taskGroup) => (
             <ChecklistItem
-              key={checklistGroup.id}
-              checklisGroupEntity={checklistGroup}
-              onClick={handleShowDetailChecklist(checklistGroup)}
+              key={taskGroup.id}
+              checklisGroupEntity={taskGroup}
+              onClick={handleShowDetailTaskGroup(taskGroup)}
               className='ring-2 ring-white hover:ring-gray-300 mb-3'
               CheckboxPros={{
                 colorScheme: 'twGray',
                 size: 'lg',
                 className: 'mx-4',
-                isChecked: checklistGroup.is_completed,
+                isChecked: taskGroup.is_completed,
               }}
               TextProps={{
                 className: 'font-poppins cursor-default',
@@ -128,7 +117,7 @@ export default function Dashboard() {
           <form
             data-testid='checklist-group-form'
             className='max-w-xl mx-auto'
-            onSubmit={handleSubmit(handleAddChecklistGroup)}
+            onSubmit={handleSubmit(handleAddTaskGroup)}
           >
             <InputTask
               variant='Add Task-Group'
@@ -146,11 +135,11 @@ export default function Dashboard() {
           </form>
         </Box>
         <Box>
-          {checklistGroup && (
+          {checklistGroup && isOpen && (
             <DrawerChecklist taskGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
           )}
         </Box>
-      </main>
+      </Box>
     </>
   )
 }
