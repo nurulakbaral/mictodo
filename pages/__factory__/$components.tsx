@@ -9,6 +9,7 @@ export default function FactoryComponentsPage() {
   const { isOpen, onOpen, onClose } = C.useDisclosure()
   React.useEffect(() => {
     if (process.env.NEXT_PUBLIC_IS_DEVELOPMENT === 'false') router.push('/404')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   if (process.env.NEXT_PUBLIC_IS_DEVELOPMENT === 'false') return null
   return (
