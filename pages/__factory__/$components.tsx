@@ -3,7 +3,7 @@ import * as C from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
-import { DrawerBase } from '~/src/components/v2/drawer-base'
+import { BaseDrawer } from '~/src/components/v2/base-drawer'
 
 export default function FactoryComponentsPage() {
   const router = useRouter()
@@ -22,14 +22,14 @@ export default function FactoryComponentsPage() {
           <C.Button colorScheme='teal' onClick={onOpen}>
             Open
           </C.Button>
-          <DrawerBase
+          <BaseDrawer
             rootDrawerProps={{
               isOpen,
               onClose,
             }}
           >
             <C.Text>Hello Drawer</C.Text>
-          </DrawerBase>
+          </BaseDrawer>
         </C.Box>
         <C.Box w='full'>
           <TextFieldTaskGroup

@@ -25,18 +25,8 @@ import type {
 } from '@chakra-ui/react'
 import { HiOutlineTrash } from 'react-icons/hi'
 
-type ReactNode =
-  | React.ReactNode
-  | React.ReactPortal
-  | React.ReactChild
-  | React.ReactNode[]
-  | ReadonlyArray<React.ReactNode>
-  | boolean
-  | null
-  | undefined
-
-type DrawerBaseProps = {
-  children: ReactNode
+type BaseDrawerProps = {
+  children: React.ReactNode
   rootDrawerProps: Omit<DrawerProps, 'children'>
   drawerOverlayProps?: ModalOverlayProps
   drawerContentProps?: DrawerContentProps
@@ -46,7 +36,7 @@ type DrawerBaseProps = {
   drawerFooterProps?: ModalFooterProps
 }
 
-export const DrawerBase = ({
+export const BaseDrawer = ({
   children,
   rootDrawerProps,
   drawerOverlayProps,
@@ -55,7 +45,7 @@ export const DrawerBase = ({
   drawerHeaderProps,
   drawerBodyProps,
   drawerFooterProps,
-}: DrawerBaseProps) => {
+}: BaseDrawerProps) => {
   return (
     <Drawer placement='right' size='sm' {...rootDrawerProps}>
       <DrawerOverlay {...drawerOverlayProps} />
