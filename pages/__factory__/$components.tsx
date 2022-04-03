@@ -3,6 +3,7 @@ import * as C from '@chakra-ui/react'
 import { useRouter } from 'next/router'
 import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
+import { BaseTextarea } from '~/src/components/v2/base-textarea'
 import { BaseDrawer } from '~/src/components/v2/base-drawer'
 
 export default function FactoryComponentsPage() {
@@ -41,6 +42,9 @@ export default function FactoryComponentsPage() {
         </C.Box>
         <C.Box w='full'>
           <TextFieldTaskItem />
+        </C.Box>
+        <C.Box w='full'>
+          <BaseTextarea />
         </C.Box>
       </C.VStack>
     )
