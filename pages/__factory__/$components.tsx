@@ -16,6 +16,9 @@ export default function FactoryComponentsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   if (process.env.NEXT_PUBLIC_IS_DEVELOPMENT === 'false') return null
+  const handleTextarea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    console.log(e.target.value)
+  }
   return (
     initiate && (
       <C.VStack py={6} px={6} w='full' spacing={5}>
@@ -41,7 +44,11 @@ export default function FactoryComponentsPage() {
           />
         </C.Box>
         <C.Box w='full'>
-          <TextFieldTaskItem />
+          <TextFieldTaskItem
+            textareaProps={{
+              onChange: handleTextarea,
+            }}
+          />
         </C.Box>
         <C.Box w='full'>
           <BaseTextarea />
