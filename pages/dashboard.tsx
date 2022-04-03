@@ -12,6 +12,7 @@ import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
+import { DrawerTask } from '~/src/components/v2/drawer-task'
 
 type FormValues = {
   checklistGroup: string
@@ -136,7 +137,7 @@ export default function Dashboard() {
         </Box>
         <Box>
           {checklistGroup && isOpen && (
-            <DrawerChecklist taskGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+            <DrawerTask taskGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
           )}
         </Box>
       </Box>

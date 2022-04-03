@@ -1,12 +1,19 @@
 import * as React from 'react'
 import { Textarea } from '@chakra-ui/react'
 import type { TextareaProps } from '@chakra-ui/react'
+import type { ExtendsOptionalKeys } from '~/src/types'
 
-type BaseTextarea = {
+export type TBaseTextarea = {
   textareaProps?: TextareaProps
 }
+export type BaseTextareaProps<T> = ExtendsOptionalKeys<
+  T,
+  {
+    'data-testid'?: string
+  }
+>
 
-export const BaseTextarea = ({ textareaProps = {} }: BaseTextarea) => {
+export const BaseTextarea = ({ textareaProps = {} }: BaseTextareaProps<TBaseTextarea>) => {
   const { onChange, ...$textareaProps } = textareaProps as TextareaProps
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const [textareaHeight, setTextareaHeight] = React.useState<number | string>('auto')

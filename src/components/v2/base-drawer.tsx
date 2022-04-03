@@ -22,6 +22,7 @@ import type {
   ModalHeaderProps,
   ModalBodyProps,
   ModalFooterProps,
+  ButtonProps,
 } from '@chakra-ui/react'
 import { HiOutlineTrash } from 'react-icons/hi'
 
@@ -34,6 +35,7 @@ type BaseDrawerProps = {
   drawerHeaderProps?: ModalHeaderProps
   drawerBodyProps?: ModalBodyProps
   drawerFooterProps?: ModalFooterProps
+  buttonDelete?: ButtonProps
 }
 
 export const BaseDrawer = ({
@@ -45,6 +47,7 @@ export const BaseDrawer = ({
   drawerHeaderProps,
   drawerBodyProps,
   drawerFooterProps,
+  buttonDelete,
 }: BaseDrawerProps) => {
   return (
     <Drawer placement='right' size='sm' {...rootDrawerProps}>
@@ -70,7 +73,7 @@ export const BaseDrawer = ({
               </Text>
             </Box>
             <Box>
-              <Button colorScheme={'white'}>
+              <Button colorScheme={'white'} {...buttonDelete}>
                 <Icon as={HiOutlineTrash} w={6} h={6} boxSize={'1.6em'} textColor={'gray.400'} />
               </Button>
             </Box>

@@ -1,10 +1,31 @@
 import * as React from 'react'
 
+/**
+ *
+ * Notes: Utils Type
+ *
+ */
+
 export type As<Props = any> = React.ElementType<Props>
 export type BaseProps<OptionsProps, HTMLElementName extends As> = OptionsProps &
   React.ComponentPropsWithoutRef<HTMLElementName>
+export type PickRequiredKeys<T> = {
+  [K in keyof T as T[K] extends Required<T>[K] ? K : never]: T[K]
+}
+export type PickOptionalKeys<T> = Omit<T, keyof PickRequiredKeys<T>>
+export type ExtendsKeys<T, Options> = {
+  [P in keyof T]?: T[P] & Options
+}
+export type ExtendsOptionalKeys<T, Options> = {
+  [P in keyof T]: undefined extends T[P] ? T[P] & Options : T[P]
+}
 
-// Notes: Supabase Database Types
+/**
+ *
+ * Notes: Suapabase Type
+ *
+ */
+
 export type TDefaultEntity = {
   id: string
   created_at?: Date
