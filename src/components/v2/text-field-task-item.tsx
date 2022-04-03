@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { Textarea, Box, HStack, Checkbox, Icon } from '@chakra-ui/react'
+import { Box, HStack, Checkbox, Icon } from '@chakra-ui/react'
 import type { BoxProps, StackProps, CheckboxProps, IconProps, TextareaProps } from '@chakra-ui/react'
 import { HiX } from 'react-icons/hi'
+import { BaseTextarea } from '~/src/components/v2/base-textarea'
 
 type TextFieldTaskItemProps = {
   stackProps?: StackProps
@@ -22,21 +23,6 @@ export const TextFieldTaskItem = ({
   boxIconProps,
   iconProps,
 }: TextFieldTaskItemProps) => {
-  const { onChange, ...$textareaProps } = textareaProps as TextareaProps
-  // Notes: Textarea Auto-Resize https://medium.com/@lucasalgus/creating-a-custom-auto-resize-textarea-component-for-your-react-web-application-6959c0ad68bc
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
-  const [textareaHeight, setTextareaHeight] = React.useState<number | string>('auto')
-  const [textareaValue, setTextareaValue] = React.useState<string>('')
-  React.useEffect(() => {
-    setTextareaHeight(textareaRef.current?.scrollHeight as number)
-  }, [textareaValue])
-  const handleTextarea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setTextareaHeight('auto')
-    setTextareaValue(e.target.value)
-    if (onChange) {
-      onChange(e)
-    }
-  }
   return (
     <HStack
       aria-label='h-stack-component'
@@ -68,16 +54,13 @@ export const TextFieldTaskItem = ({
         alignItems='center'
         {...boxTextareaProps}
       >
-        <Textarea
-          ref={textareaRef}
-          onChange={handleTextarea}
-          height={`${textareaHeight}px`}
-          variant={'flushed'}
-          rows={1}
-          resize={'none'}
-          focusBorderColor={'twGray.400'}
-          overflow='hidden'
-          {...$textareaProps}
+        <BaseTextarea
+          textareaProps={{
+            variant: 'flushed',
+            rows: 1,
+            focusBorderColor: 'twGray.400',
+            ...textareaProps,
+          }}
         />
       </Box>
       {/* Notes: Icon */}
