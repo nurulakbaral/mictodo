@@ -9,9 +9,6 @@ import { BaseTextarea } from '~/src/components/v2/base-textarea'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 
 type DrawerTaskProps = { taskGroup: TChecklistGroupEntity } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
-type FormValues = {
-  checklistItem: string
-}
 
 const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 'right' }: DrawerTaskProps) => {
   const { taskGroupMutation } = useApiTaskGroup()

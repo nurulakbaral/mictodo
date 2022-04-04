@@ -47,7 +47,9 @@ export default function FactoryComponentsPage() {
               mx: 0,
             }}
             isPriority={false}
-          />
+          >
+            Hello task Group
+          </TextFieldTaskGroup>
         </C.Box>
         <C.Box w='full'>
           <TextFieldTaskItem

@@ -12,6 +12,7 @@ type TextFieldTaskGroupProps = {
   boxIconProps?: BoxProps
   iconProps?: IconProps
   isPriority: boolean
+  children: React.ReactNode
 }
 
 export const TextFieldTaskGroup = ({
@@ -23,6 +24,7 @@ export const TextFieldTaskGroup = ({
   boxIconProps,
   iconProps,
   isPriority = false,
+  children,
 }: TextFieldTaskGroupProps) => {
   return (
     <HStack
@@ -60,23 +62,25 @@ export const TextFieldTaskGroup = ({
         {...boxFieldProps}
       >
         <Text textAlign={'left'} fontSize={'md'} {...textFieldProps}>
-          Hello Task Group
+          {children}
         </Text>
       </Box>
       {/* Notes: Icon */}
-      <Box
-        aria-label='box-icon-component'
-        // Notes: Marginleft is used to remove behave
-        style={{ marginLeft: 0 }}
-        h={'12'}
-        display='flex'
-        justifyContent={'center'}
-        alignItems='center'
-        px={'4'}
-        {...boxIconProps}
-      >
-        <Icon as={isPriority ? HiStar : HiOutlineStar} w={6} h={6} textColor={'gray.400'} {...iconProps} />
-      </Box>
+      {!process.env.NEXT_PUBLIC_IS_RELEASE_FEATURE && (
+        <Box
+          aria-label='box-icon-component'
+          // Notes: Marginleft is used to remove behave
+          style={{ marginLeft: 0 }}
+          h={'12'}
+          display='flex'
+          justifyContent={'center'}
+          alignItems='center'
+          px={'4'}
+          {...boxIconProps}
+        >
+          <Icon as={isPriority ? HiStar : HiOutlineStar} w={6} h={6} textColor={'gray.400'} {...iconProps} />
+        </Box>
+      )}
     </HStack>
   )
 }

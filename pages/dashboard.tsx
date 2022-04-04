@@ -5,12 +5,12 @@ import { supabaseClient } from '~/src/libs/supabase-client'
 import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
 import { useDisclosure, Box, Text } from '@chakra-ui/react'
-import { ChecklistItem } from '~/src/components/checklist-item'
 import { ButtonBase } from '~/src/components/button-base'
 import type { TChecklistGroupEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { DrawerTask } from '~/src/components/v2/drawer-task'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
+import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
@@ -19,6 +19,13 @@ export default function Dashboard() {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
   const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup()
+
+  /**
+   *
+   * Notes: Handle Page Flow
+   *
+   */
+
   if (isLoading || authorizedUser === undefined) {
     return (
       <div className='pt-40'>
@@ -29,6 +36,13 @@ export default function Dashboard() {
   if (isError) {
     return router.push('/404')
   }
+
+  /**
+   *
+   * Notes: Task Group Cases
+   *
+   */
+
   const handleAddTaskGroup = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       const inputValue = e.currentTarget.value
@@ -40,6 +54,15 @@ export default function Dashboard() {
         user_id: authorizedUser?.id,
         title: inputValue,
         $options: { verb: 'INSERT' },
+      })
+    }
+  }
+  const handleUpdateTaskGroupCheckbox = (id: string) => {
+    return (e: React.ChangeEvent<HTMLInputElement>) => {
+      taskGroupMutation.mutate({
+        id,
+        is_completed: e.currentTarget.checked,
+        $options: { verb: 'UPDATE' },
       })
     }
   }
@@ -88,22 +111,27 @@ export default function Dashboard() {
         </Box>
         <Box className='pt-12 pb-36'>
           {taskGroupEntity?.data?.data?.map((taskGroup) => (
-            <ChecklistItem
+            <TextFieldTaskGroup
+              stackProps={{
+                _hover: {
+                  bg: 'twGray.100',
+                },
+                mb: 2,
+              }}
               key={taskGroup.id}
-              checklisGroupEntity={taskGroup}
-              onClick={handleShowDetailTaskGroup(taskGroup)}
-              className='ring-2 ring-white hover:ring-gray-300 mb-3'
-              CheckboxPros={{
+              isPriority={false}
+              boxFieldProps={{
+                onClick: handleShowDetailTaskGroup(taskGroup),
+              }}
+              checkboxProps={{
                 colorScheme: 'twGray',
                 size: 'lg',
-                className: 'mx-4',
-                isChecked: taskGroup.is_completed,
+                onChange: (e) => handleUpdateTaskGroupCheckbox(taskGroup.id)(e),
+                defaultChecked: taskGroup.is_completed,
               }}
-              TextProps={{
-                className: 'font-poppins cursor-default',
-                fontSize: 'lg',
-              }}
-            />
+            >
+              {taskGroup.title}
+            </TextFieldTaskGroup>
           ))}
         </Box>
         <Box
