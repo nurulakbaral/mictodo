@@ -136,6 +136,8 @@ export default function Dashboard() {
           ))}
         </Box>
         <Box
+          display={'flex'}
+          justifyContent={'center'}
           bgColor={'white'}
           position={'fixed'}
           bottom={0}
@@ -149,7 +151,7 @@ export default function Dashboard() {
           <TextFieldAddTask
             boxProps={{
               w: 'lg',
-              margin: 'auto',
+              mx: 4,
             }}
             inputProps={{
               colorScheme: 'white',
