@@ -3,8 +3,9 @@ import { Box, HStack, Checkbox, Icon } from '@chakra-ui/react'
 import type { BoxProps, StackProps, CheckboxProps, IconProps, TextareaProps } from '@chakra-ui/react'
 import { HiX } from 'react-icons/hi'
 import { BaseTextarea } from '~/src/components/v2/base-textarea'
+import type { ExtendsOptionalKeys } from '~/src/types'
 
-type TextFieldTaskItemProps = {
+export type TTextFieldTaskItem = {
   stackProps?: StackProps
   boxCheckboxProps?: BoxProps
   checkboxProps?: CheckboxProps
@@ -12,17 +13,43 @@ type TextFieldTaskItemProps = {
   textareaProps?: TextareaProps
   boxIconProps?: BoxProps
   iconProps?: IconProps
+  onChangeValue: (value: string) => void
 }
+
+export type TextFieldTaskItemProps<T> = ExtendsOptionalKeys<
+  T,
+  {
+    'data-testid'?: string
+  }
+>
 
 export const TextFieldTaskItem = ({
   stackProps,
   boxCheckboxProps,
-  checkboxProps,
+  checkboxProps = {},
   boxTextareaProps,
   textareaProps = {},
   boxIconProps,
   iconProps,
-}: TextFieldTaskItemProps) => {
+  onChangeValue,
+}: TextFieldTaskItemProps<TTextFieldTaskItem>) => {
+  const { onBlur, onKeyPress, ...$textareaProps } = textareaProps
+  const { onChange, ...$checkboxProps } = checkboxProps
+  const handleSendValue = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (onChangeValue) {
+      onChangeValue(e.target.value)
+    }
+  }
+  const handleSendValueWithEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (onChangeValue && e.key === 'Enter') {
+      onChangeValue(e.currentTarget.value)
+    }
+  }
+  const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e)
+    }
+  }
   return (
     <HStack
       aria-label='h-stack-component'
@@ -41,7 +68,7 @@ export const TextFieldTaskItem = ({
         pr={'4'}
         {...boxCheckboxProps}
       >
-        <Checkbox colorScheme={'twGray'} size={'lg'} {...checkboxProps} />
+        <Checkbox onChange={handleCheckbox} colorScheme={'twGray'} size={'lg'} {...$checkboxProps} />
       </Box>
       {/* Notes: Input */}
       <Box
@@ -59,7 +86,9 @@ export const TextFieldTaskItem = ({
             variant: 'flushed',
             rows: 1,
             focusBorderColor: 'twGray.400',
-            ...textareaProps,
+            onBlur: handleSendValue,
+            onKeyPress: handleSendValueWithEnter,
+            ...$textareaProps,
           }}
         />
       </Box>
@@ -75,7 +104,7 @@ export const TextFieldTaskItem = ({
         pl={'4'}
         {...boxIconProps}
       >
-        <Icon as={HiX} w={5} h={5} textColor={'gray.400'} {...iconProps} />
+        <Icon as={HiX} w={5} h={5} textColor={'gray.400'} className='hover:text-red-500' {...iconProps} />
       </Box>
     </HStack>
   )
