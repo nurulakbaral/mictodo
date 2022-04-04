@@ -1,13 +1,12 @@
 import * as React from 'react'
 import { DrawerProps, UseDisclosureProps, Box } from '@chakra-ui/react'
-import { useForm } from 'react-hook-form'
-import { InputTask } from '~/src/components/input-task'
 import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
 import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
 import { BaseDrawer } from '~/src/components/v2/base-drawer'
 import { BaseTextarea } from '~/src/components/v2/base-textarea'
+import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 
 type DrawerTaskProps = { taskGroup: TChecklistGroupEntity } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 type FormValues = {
@@ -17,8 +16,6 @@ type FormValues = {
 const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 'right' }: DrawerTaskProps) => {
   const { taskGroupMutation } = useApiTaskGroup()
   const { taskItemEntity, taskItemMutation } = useApiTaskItem(taskGroup)
-  const { register, handleSubmit, watch, reset } = useForm<FormValues>()
-  const taskValue = watch('checklistItem')
 
   /**
    *
@@ -64,21 +61,21 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
    *
    */
 
-  const handleAddTaskItem = async (values: FormValues) => {
-    if (values.checklistItem === '') {
-      alert('Please enter a checklistItem')
-      return
+  const handleAddTaskItem = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      const inputValue = e.currentTarget.value
+      if (inputValue === '') {
+        alert('Please enter a checklistItem')
+        return
+      }
+      if (taskGroup) {
+        taskItemMutation.mutate({
+          checklist_group_id: taskGroup.id,
+          title: inputValue,
+          $options: { verb: 'INSERT' },
+        })
+      }
     }
-    if (taskGroup) {
-      taskItemMutation.mutate({
-        checklist_group_id: taskGroup.id,
-        title: values.checklistItem,
-        $options: { verb: 'INSERT' },
-      })
-    }
-    reset({
-      checklistItem: '',
-    })
   }
   const handleDeleteTaskItem = (checklisItemId: string) => {
     taskItemMutation.mutate({ id: checklisItemId, $options: { verb: 'DELETE' } })
@@ -172,23 +169,21 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
               }}
             />
           ))}
-        <form data-testid='checklist-item-form' className='mx-auto mt-4' onSubmit={handleSubmit(handleAddTaskItem)}>
-          <InputTask
-            variant='Add Task-Item'
-            className='w-full'
-            value={taskValue}
-            dataTestId='checklist-item-input'
-            InputProps={{
-              colorScheme: 'white',
-              autoComplete: 'off',
-              className: 'font-poppins',
-              focusBorderColor: 'twGray.400',
-              size: 'lg',
-              w: 'full',
-              ...register('checklistItem'),
-            }}
-          />
-        </form>
+        <TextFieldAddTask
+          boxProps={{
+            w: 'full',
+            mt: 6,
+          }}
+          inputProps={{
+            colorScheme: 'white',
+            autoComplete: 'off',
+            className: 'font-poppins',
+            focusBorderColor: 'twGray.400',
+            size: 'lg',
+            onKeyPress: handleAddTaskItem,
+          }}
+          placeholder='Add Task'
+        />
       </Box>
       <Box>
         <BaseTextarea
