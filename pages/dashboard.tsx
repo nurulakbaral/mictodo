@@ -6,11 +6,11 @@ import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
 import { useDisclosure, Box, Text } from '@chakra-ui/react'
 import { ButtonBase } from '~/src/components/button-base'
-import type { TChecklistGroupEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { DrawerTask } from '~/src/components/v2/drawer-task'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
+import type { TChecklistGroupEntity } from '~/src/types'
 
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
@@ -128,6 +128,7 @@ export default function Dashboard() {
                 size: 'lg',
                 onChange: (e) => handleUpdateTaskGroupCheckbox(taskGroup.id)(e),
                 defaultChecked: taskGroup.is_completed,
+                isChecked: taskGroup.is_completed,
               }}
             >
               {taskGroup.title}

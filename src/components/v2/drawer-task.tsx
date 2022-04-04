@@ -91,7 +91,6 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       })
     }
   }
-
   return (
     <BaseDrawer
       rootDrawerProps={{
@@ -196,6 +195,5 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
     </BaseDrawer>
   )
 }
-
 export const DrawerTask = React.memo(Component)
 DrawerTask.displayName = 'DrawerTask'
