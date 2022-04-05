@@ -87,7 +87,7 @@ export const TextFieldTaskItem = ({
             rows: 1,
             focusBorderColor: 'twGray.400',
             onBlur: handleSendValue,
-            onKeyPress: handleSendValueWithEnter,
+            onKeyDown: handleSendValueWithEnter,
             ...$textareaProps,
           }}
         />

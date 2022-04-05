@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Textarea } from '@chakra-ui/react'
+import { Textarea, useOutsideClick } from '@chakra-ui/react'
 import type { TextareaProps } from '@chakra-ui/react'
 import type { ExtendsOptionalKeys } from '~/src/types'
 
@@ -14,29 +14,42 @@ export type BaseTextareaProps<T> = ExtendsOptionalKeys<
 >
 
 export const BaseTextarea = ({ textareaProps = {} }: BaseTextareaProps<TBaseTextarea>) => {
-  const { onChange, ...$textareaProps } = textareaProps as TextareaProps
+  const { onChange, onKeyDown, bgColor = 'white', ...$textareaProps } = textareaProps as TextareaProps
+  const ref = React.useRef(null)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
   const [textareaHeight, setTextareaHeight] = React.useState<number | string>('auto')
   const [textareaValue, setTextareaValue] = React.useState<string>('')
+  const [bgColorFocus, setBgColorFocus] = React.useState<boolean>(false)
   React.useEffect(() => {
     setTextareaHeight(textareaRef.current?.scrollHeight as number)
   }, [textareaValue])
-  const handleTextarea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  useOutsideClick({
+    ref: ref,
+    handler: () => setBgColorFocus(false),
+  })
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     // Notes: Textarea Auto-Resize https://medium.com/@lucasalgus/creating-a-custom-auto-resize-textarea-component-for-your-react-web-application-6959c0ad68bc
     setTextareaHeight('auto')
     setTextareaValue(e.target.value)
-    if (onChange) {
-      onChange(e)
+    onChange && onChange(e)
+  }
+  const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter') {
+      setBgColorFocus(true)
+      e.currentTarget.blur()
+      onKeyDown && onKeyDown(e)
     }
   }
   // Refactor: Optimize this component (rendering)
   return (
     <Textarea
       ref={textareaRef}
-      onChange={handleTextarea}
+      onChange={handleTextareaChange}
       height={`${textareaHeight}px`}
       resize={'none'}
       overflow={'hidden'}
+      onKeyDown={handleTextareaKeyDown}
+      bgColor={bgColorFocus ? 'twGray.200' : bgColor}
       {...$textareaProps}
     />
   )
