@@ -185,7 +185,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
         <BaseTextarea
           textareaProps={{
             'data-testid': 'checklist-group-description-on-drawer',
-            onKeyPress: handleUpdateTaskGroupDescWithEnter,
+            onKeyDown: handleUpdateTaskGroupDescWithEnter,
             onBlur: handleUpdateTaskGroupDesc,
             defaultValue: taskGroup.description,
             placeholder: 'Add note',
