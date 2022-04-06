@@ -122,6 +122,7 @@ export default function Dashboard() {
               isPriority={false}
               boxFieldProps={{
                 onClick: handleShowDetailTaskGroup(taskGroup),
+                'data-testid': 'task-group',
               }}
               checkboxProps={{
                 colorScheme: 'twGray',
@@ -129,6 +130,7 @@ export default function Dashboard() {
                 onChange: (e) => handleUpdateTaskGroupCheckbox(taskGroup.id)(e),
                 defaultChecked: taskGroup.is_completed,
                 isChecked: taskGroup.is_completed,
+                'aria-label': 'task-group-checkbox',
               }}
             >
               {taskGroup.title}
@@ -152,6 +154,7 @@ export default function Dashboard() {
             boxProps={{
               w: 'lg',
               mx: 4,
+              'data-testid': 'text-field-add-task-wrapper',
             }}
             inputProps={{
               colorScheme: 'white',
@@ -160,6 +163,7 @@ export default function Dashboard() {
               focusBorderColor: 'twGray.400',
               size: 'lg',
               onKeyPress: handleAddTaskGroup,
+              'data-testid': 'text-field-add-task',
             }}
             placeholder='Add Task'
           />

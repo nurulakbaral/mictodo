@@ -104,6 +104,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       }}
       buttonDelete={{
         onClick: handleDeleteTaskGroup,
+        'data-testid': 'button-delete-task-group',
       }}
     >
       <Box mb={4}>
@@ -142,18 +143,19 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
             <TextFieldTaskItem
               onChangeValue={handleUpdateTaskItem(checklisItem.id)}
               stackProps={{
-                'data-testid': 'checklist-item-unit-on-drawer',
-                'aria-label': 'task-group',
+                'data-testid': 'task-item-on-drawer-wrapper',
               }}
               key={`item-${checklisItem.id}`}
               iconProps={{
                 onClick: () => handleDeleteTaskItem(checklisItem.id),
+                'data-testid': 'button-delete-task-item',
               }}
               checkboxProps={{
                 onChange: (e) => handleUpdateTaskItemCheckbox(checklisItem.id)(e),
                 colorScheme: 'twGray',
                 size: 'lg',
                 defaultChecked: checklisItem.is_completed,
+                'aria-label': 'task-item-checkbox-on-drawer',
               }}
               textareaProps={{
                 colorScheme: 'white',
@@ -169,6 +171,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
           boxProps={{
             w: 'full',
             mt: 6,
+            'data-testid': 'text-field-add-task-item-wrapper',
           }}
           inputProps={{
             colorScheme: 'white',
@@ -177,6 +180,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
             focusBorderColor: 'twGray.400',
             size: 'lg',
             onKeyPress: handleAddTaskItem,
+            'data-testid': 'text-field-add-task-item',
           }}
           placeholder='Add Task'
         />
@@ -184,7 +188,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       <Box>
         <BaseTextarea
           textareaProps={{
-            'data-testid': 'checklist-group-description-on-drawer',
+            'data-testid': 'task-group-description-on-drawer',
             onKeyDown: handleUpdateTaskGroupDescWithEnter,
             onBlur: handleUpdateTaskGroupDesc,
             defaultValue: taskGroup.description,

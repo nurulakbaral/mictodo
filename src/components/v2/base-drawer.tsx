@@ -14,6 +14,7 @@ import {
   Text,
   Icon,
 } from '@chakra-ui/react'
+import { HiOutlineTrash } from 'react-icons/hi'
 import type {
   DrawerProps,
   ModalOverlayProps,
@@ -24,9 +25,9 @@ import type {
   ModalFooterProps,
   ButtonProps,
 } from '@chakra-ui/react'
-import { HiOutlineTrash } from 'react-icons/hi'
+import { ExtendsOptionalKeys } from '~/src/types'
 
-type BaseDrawerProps = {
+type TBaseDrawer = {
   children: React.ReactNode
   rootDrawerProps: Omit<DrawerProps, 'children'>
   drawerOverlayProps?: ModalOverlayProps
@@ -37,6 +38,12 @@ type BaseDrawerProps = {
   drawerFooterProps?: ModalFooterProps
   buttonDelete?: ButtonProps
 }
+type BaseDrawerProps = ExtendsOptionalKeys<
+  TBaseDrawer,
+  {
+    'data-testid'?: string
+  }
+>
 
 export const BaseDrawer = ({
   children,

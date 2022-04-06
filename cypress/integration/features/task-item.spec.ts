@@ -17,49 +17,47 @@ describe('Checklist Item', () => {
   })
   it('Should show dashboard page', () => {
     cy.contains('Hallo')
-    cy.get('[data-testid=checklist-group-form').should('be.visible')
+    cy.get('[data-testid=text-field-add-task-wrapper').should('be.visible')
   })
   it('Should create one checklist group', () => {
-    cy.get('[data-testid=checklist-group-form').should('be.visible')
-    cy.get('[data-testid=checklist-group-input]').type('Workout!')
-    cy.get('[data-testid=checklist-group-form]').submit()
+    cy.get('[data-testid=text-field-add-task-wrapper]').should('be.visible')
+    cy.get('[data-testid=text-field-add-task]').type('Workout!{enter}')
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[data-testid=checklist-group-unit]').should('be.visible')
-    cy.get('[data-testid=checklist-group-unit]').should('have.length', 1)
+    cy.get('[data-testid=task-group]').should('be.visible')
+    cy.get('[data-testid=task-group]').should('have.length', 1)
   })
   it('Should create, remove, and checked multiple checklist item', () => {
-    cy.get('[data-testid=checklist-group-unit]').should('be.visible')
-    cy.get('[data-testid=checklist-group-unit]').should('have.length', 1)
-    cy.get('[data-testid=checklist-group-unit]').click()
-    cy.get('[data-testid=checklist-item-form').should('be.visible')
+    cy.get('[data-testid=task-group]').should('be.visible')
+    cy.get('[data-testid=task-group]').should('have.length', 1)
+    cy.get('[data-testid=task-group]').click()
+    cy.get('[data-testid=text-field-add-task-item-wrapper').should('be.visible')
     cy.wrap(['Sit-up', 'Push-up', 'Pull-up']).each(($el) => {
-      cy.get('[data-testid=checklist-item-input]').type(JSON.stringify($el))
-      cy.get('[data-testid=checklist-item-form]').submit()
+      cy.get('[data-testid=text-field-add-task-item]').type(`${JSON.stringify($el)}{enter}`)
     })
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[aria-label=checklist-item-checkbox-on-drawer]').each(($el, index) => {
+    cy.get('[aria-label=task-item-checkbox-on-drawer]').each(($el, index) => {
       if (index % 2 === 0) {
         cy.wrap($el).check({ force: true })
       }
     })
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[aria-label=checklist-item-checkbox-on-drawer]').each(($el, index) => {
+    cy.get('[aria-label=task-item-checkbox-on-drawer]').each(($el, index) => {
       if (index % 2 === 0) {
         cy.wrap($el).should('be.checked')
       }
     })
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[data-testid=checklist-item-unit-on-drawer]').should('have.length', 3)
-    cy.get('[data-testid=btn-remove-checklist-item]').each(($el) => {
+    cy.get('[data-testid=task-item-on-drawer-wrapper]').should('have.length', 3)
+    cy.get('[data-testid=button-delete-task-item]').each(($el) => {
       cy.wrap($el).click()
     })
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[data-testid=checklist-item-unit-on-drawer]').should('have.length', 0)
-    cy.get('[data-testid=checklist-item-unit-on-drawer]').should('not.exist')
-    cy.get('[data-testid=checklist-group-description-on-drawer]').type('Description{enter}')
+    cy.get('[data-testid=task-item-on-drawer-wrapper]').should('have.length', 0)
+    cy.get('[data-testid=task-item-on-drawer-wrapper]').should('not.exist')
+    cy.get('[data-testid=task-group-description-on-drawer]').type('Hello Mictodo{enter}')
     cy.wait(waitTimeBeforeAssert)
-    cy.get('[data-testid=checklist-group-description-on-drawer]').should('have.value', 'Description\n')
-    cy.get('[data-testid=btn-remove-checklist-group-unit]').click()
+    cy.get('[data-testid=task-group-description-on-drawer]').should('have.value', 'Hello Mictodo\n')
+    cy.get('[data-testid=button-delete-task-group]').click()
   })
 })
 
