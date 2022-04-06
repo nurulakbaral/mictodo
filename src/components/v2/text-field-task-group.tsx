@@ -2,8 +2,9 @@ import * as React from 'react'
 import { Box, Checkbox, Text, HStack, Icon } from '@chakra-ui/react'
 import { HiOutlineStar, HiStar } from 'react-icons/hi'
 import type { StackProps, BoxProps, CheckboxProps, TextProps, IconProps } from '@chakra-ui/react'
+import type { ExtendsOptionalKeys } from '~/src/types'
 
-type TextFieldTaskGroupProps = {
+type TTextFieldTaskGroup = {
   stackProps?: StackProps
   boxCheckboxProps?: BoxProps
   checkboxProps?: CheckboxProps
@@ -14,6 +15,12 @@ type TextFieldTaskGroupProps = {
   isPriority: boolean
   children: React.ReactNode
 }
+type TextFieldTaskGroupProps = ExtendsOptionalKeys<
+  TTextFieldTaskGroup,
+  {
+    'data-testid'?: string
+  }
+>
 
 export const TextFieldTaskGroup = ({
   stackProps,

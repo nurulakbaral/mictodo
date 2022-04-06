@@ -104,6 +104,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       }}
       buttonDelete={{
         onClick: handleDeleteTaskGroup,
+        'data-testid': 'button-delete-task-group',
       }}
     >
       <Box mb={4}>
