@@ -5,6 +5,7 @@ import type { ExtendsOptionalKeys } from '~/src/types'
 
 export type TBaseTextarea = {
   textareaProps?: TextareaProps
+  withKeyEnter?: boolean
 }
 export type BaseTextareaProps<T> = ExtendsOptionalKeys<
   T,
@@ -13,7 +14,7 @@ export type BaseTextareaProps<T> = ExtendsOptionalKeys<
   }
 >
 
-export const BaseTextarea = ({ textareaProps = {} }: BaseTextareaProps<TBaseTextarea>) => {
+export const BaseTextarea = ({ textareaProps = {}, withKeyEnter = true }: BaseTextareaProps<TBaseTextarea>) => {
   const { onChange, onKeyDown, bgColor = 'white', ...$textareaProps } = textareaProps as TextareaProps
   const ref = React.useRef(null)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
@@ -34,7 +35,7 @@ export const BaseTextarea = ({ textareaProps = {} }: BaseTextareaProps<TBaseText
     onChange && onChange(e)
   }
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && withKeyEnter) {
       setBgColorFocus(true)
       e.currentTarget.blur()
       onKeyDown && onKeyDown(e)
