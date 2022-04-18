@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { DrawerProps, UseDisclosureProps, Box } from '@chakra-ui/react'
+import { DrawerProps, UseDisclosureProps, Box, Textarea } from '@chakra-ui/react'
 import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
@@ -44,12 +44,6 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
   const handleUpdateTaskGroupDesc = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const description = e.target.value
     taskGroupMutation.mutate({ id: taskGroup.id, description, $options: { verb: 'UPDATE' } })
-  }
-  const handleUpdateTaskGroupDescWithEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const description = e.currentTarget.value
-    if (e.key === 'Enter') {
-      taskGroupMutation.mutate({ id: taskGroup.id, description, $options: { verb: 'UPDATE' } })
-    }
   }
 
   /**
@@ -98,6 +92,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
         onClose,
         placement,
         size: 'sm',
+        'data-testid': 'drawer-task',
       }}
       drawerBodyProps={{
         mt: 0,
@@ -187,9 +182,9 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       </Box>
       <Box>
         <BaseTextarea
+          withKeyEnter={false}
           textareaProps={{
             'data-testid': 'task-group-description-on-drawer',
-            onKeyDown: handleUpdateTaskGroupDescWithEnter,
             onBlur: handleUpdateTaskGroupDesc,
             defaultValue: taskGroup.description,
             placeholder: 'Add note',

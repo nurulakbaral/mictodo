@@ -29,7 +29,7 @@ import { ExtendsOptionalKeys } from '~/src/types'
 
 type TBaseDrawer = {
   children: React.ReactNode
-  rootDrawerProps: Omit<DrawerProps, 'children'>
+  rootDrawerProps?: Omit<DrawerProps, 'children'>
   drawerOverlayProps?: ModalOverlayProps
   drawerContentProps?: DrawerContentProps
   drawerCloseButtonProps?: CloseButtonProps
@@ -57,7 +57,7 @@ export const BaseDrawer = ({
   buttonDelete,
 }: BaseDrawerProps) => {
   return (
-    <Drawer placement='right' size='sm' {...rootDrawerProps}>
+    <Drawer placement='right' size='sm' {...(rootDrawerProps as Omit<DrawerProps, 'children'>)}>
       <DrawerOverlay {...drawerOverlayProps} />
       <DrawerContent {...drawerContentProps}>
         {/* Notes: Button Close */}
