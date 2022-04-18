@@ -16,7 +16,7 @@ import {
   Flex,
   Textarea,
 } from '@chakra-ui/react'
-import { InputChecklist } from '~/src/components/input-checklist'
+import { InputChecklist } from '~/src/legacy/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/components/input-task'
