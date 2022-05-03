@@ -6,6 +6,7 @@ import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
 import { BaseTextarea } from '~/src/components/v2/base-textarea'
 import { BaseDrawer } from '~/src/components/v2/base-drawer'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
+import { BaseButton } from '~/src/components/v2/base-button'
 
 export default function FactoryComponentsPage() {
   const router = useRouter()
@@ -74,6 +75,9 @@ export default function FactoryComponentsPage() {
         </C.Box>
         <C.Box w='full'>
           <BaseTextarea />
+        </C.Box>
+        <C.Box w='full'>
+          <BaseButton>Go to Dashboard</BaseButton>
         </C.Box>
       </C.VStack>
     )
