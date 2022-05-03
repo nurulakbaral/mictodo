@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
 import { ProgressCircular } from '~/src/components/progress-circular'
 import { Box } from '@chakra-ui/react'
+import { BaseButton } from '~/src/components/v2/base-button'
 
 export default function Home() {
   const router = useRouter()
@@ -54,7 +55,7 @@ export default function Home() {
         <link rel='manifest' href='/manifest.json' />
       </Head>
       <main className='pt-24'>
-        <Box className='mx-auto w-5/6 mb-32'>
+        <Box className='mx-auto w-5/6' mb={44}>
           <h1 data-testid='title' className='text-center text-6xl font-medium font-poppins mb-6'>
             Mictodo
           </h1>
@@ -73,21 +74,25 @@ export default function Home() {
         )}
         {authorizedUser && (
           <Box>
-            <Box textAlign={'center'} display={'flex'} justifyContent={'center'} mb={12}>
-              <ButtonBase
-                onClick={handleRedirectToDashboard}
-                className='py-3 px-6 rounded-md flex justify-center items-center font-medium font-poppins w-5/6'
+            <Box textAlign={'center'} mb={8}>
+              <BaseButton
+                buttonProps={{
+                  onClick: handleRedirectToDashboard,
+                  width: '80%',
+                }}
               >
                 Go to Dashboard
-              </ButtonBase>
+              </BaseButton>
             </Box>
-            <Box className='text-center mt-12 flex justify-center'>
-              <ButtonBase
-                onClick={handleLogout}
-                className='py-3 px-6 rounded-md flex justify-center items-center w-5/6'
+            <Box textAlign={'center'}>
+              <BaseButton
+                buttonProps={{
+                  onClick: handleLogout,
+                  width: '80%',
+                }}
               >
-                <h1 className='text-lg font-medium font-poppins'>Sign out</h1>
-              </ButtonBase>
+                Sign out
+              </BaseButton>
             </Box>
           </Box>
         )}
