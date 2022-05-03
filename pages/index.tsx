@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Head from 'next/head'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { ButtonBase } from '~/src/components/button-base'
 import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
 import { ProgressCircular } from '~/src/components/progress-circular'
-import { Box } from '@chakra-ui/react'
+import { Box, Text } from '@chakra-ui/react'
 import { BaseButton } from '~/src/components/v2/base-button'
 
 export default function Home() {
@@ -65,11 +64,18 @@ export default function Home() {
           </h2>
         </Box>
         {!authorizedUser && (
-          <Box className='text-center flex justify-center'>
-            <ButtonBase onClick={handleLogin} className='py-3 px-6 rounded-md flex justify-center items-center'>
+          <Box textAlign={'center'}>
+            <BaseButton
+              buttonProps={{
+                onClick: handleLogin,
+                width: '80%',
+              }}
+            >
               <FcGoogle className='w-8 h-8 mr-4' />
-              <h1 className='text-lg font-medium'>Login with Google</h1>
-            </ButtonBase>
+              <Text fontWeight={'medium'} fontSize={'lg'} fontFamily={'poppins'}>
+                Login with Google
+              </Text>
+            </BaseButton>
           </Box>
         )}
         {authorizedUser && (
