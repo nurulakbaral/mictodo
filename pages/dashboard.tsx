@@ -5,11 +5,11 @@ import { supabaseClient } from '~/src/libs/supabase-client'
 import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
 import { useDisclosure, Box, Text } from '@chakra-ui/react'
-import { ButtonBase } from '~/src/components/button-base'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { DrawerTask } from '~/src/components/v2/drawer-task'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
+import { BaseButton } from '~/src/components/v2/base-button'
 import type { TChecklistGroupEntity } from '~/src/types'
 
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
@@ -84,16 +84,18 @@ export default function Dashboard() {
           <link rel='manifest' href='/manifest.json' />
         </Head>
         <main className='pt-12'>
-          <Box mt={32}>
+          <Box mt={36} width={'70%'} mx={'auto'}>
             <Text textAlign={'center'}>You dont have access yet, please login first with a google account.</Text>
           </Box>
-          <Box textAlign={'center'} display={'flex'} justifyContent={'center'} mt={12}>
-            <ButtonBase
-              onClick={handleRedirectToHome}
-              className='py-3 px-6 rounded-md flex justify-center items-center font-medium font-poppins'
+          <Box textAlign={'center'} mt={12}>
+            <BaseButton
+              buttonProps={{
+                onClick: handleRedirectToHome,
+                width: '80%',
+              }}
             >
               Back to Home
-            </ButtonBase>
+            </BaseButton>
           </Box>
         </main>
       </>
