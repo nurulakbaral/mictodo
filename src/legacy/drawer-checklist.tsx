@@ -19,7 +19,7 @@ import {
 import { InputChecklist } from '~/src/legacy/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
-import { InputTask } from '~/src/components/input-task'
+import { InputTask } from '~/src/legacy/input-task'
 import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
