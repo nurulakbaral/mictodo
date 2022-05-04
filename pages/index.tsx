@@ -4,7 +4,7 @@ import { supabaseClient } from '~/src/libs/supabase-client'
 import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
-import { ProgressCircular } from '~/src/components/progress-circular'
+import { ProgressSpinner } from '~/src/components/v2/progress-spinner'
 import { Box, Text } from '@chakra-ui/react'
 import { BaseButton } from '~/src/components/v2/base-button'
 
@@ -41,8 +41,14 @@ export default function Home() {
   const handleRedirectToDashboard = () => router.push('/dashboard')
   if (authorizedUser === undefined) {
     return (
-      <Box className='pt-40'>
-        <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
+      <Box pt={40} display={'flex'} justifyContent={'center'}>
+        <ProgressSpinner
+          spinnerProps={{
+            color: 'twGray.600',
+            size: 'xl',
+            thickness: '3px',
+          }}
+        />
       </Box>
     )
   }

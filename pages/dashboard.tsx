@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useQuery } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { ProgressCircular } from '~/src/components/progress-circular'
 import Head from 'next/head'
 import { useDisclosure, Box, Text } from '@chakra-ui/react'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
@@ -10,6 +9,7 @@ import { DrawerTask } from '~/src/components/v2/drawer-task'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 import { BaseButton } from '~/src/components/v2/base-button'
+import { ProgressSpinner } from '~/src/components/v2/progress-spinner'
 import type { TChecklistGroupEntity } from '~/src/types'
 
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
@@ -28,9 +28,15 @@ export default function Dashboard() {
 
   if (isLoading || authorizedUser === undefined) {
     return (
-      <div className='pt-40'>
-        <ProgressCircular className='w-10 h-10 mx-auto text-gray-700' />
-      </div>
+      <Box pt={40} display={'flex'} justifyContent={'center'}>
+        <ProgressSpinner
+          spinnerProps={{
+            color: 'twGray.600',
+            size: 'xl',
+            thickness: '3px',
+          }}
+        />
+      </Box>
     )
   }
   if (isError) {
