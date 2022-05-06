@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 import { useQuery } from 'react-query'
-import { supabaseClient } from '~/src/libs/supabase-client'
 import Head from 'next/head'
+import { supabaseClient } from '~/src/libs/supabase-client'
 import { useDisclosure, Box, Text } from '@chakra-ui/react'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { DrawerTask } from '~/src/components/v2/drawer-task'
@@ -16,7 +16,7 @@ const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
   const router = useRouter()
   const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isOpenDrawerTask, onOpen: onOpenDrawerTask, onClose: onCloseDrawerTask } = useDisclosure()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
   const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup()
 
@@ -75,12 +75,14 @@ export default function Dashboard() {
   const handleShowDetailTaskGroup = (checklistGroup: TChecklistGroupEntity) => {
     return () => {
       setChecklistGroup(checklistGroup)
-      onOpen()
+      onOpenDrawerTask()
     }
   }
+
   const handleRedirectToHome = () => {
     router.replace('/')
   }
+
   if (!authorizedUser) {
     return (
       <>
@@ -107,17 +109,19 @@ export default function Dashboard() {
       </>
     )
   }
+
   return (
     <>
       <Head>
         <title>Mictodo - Powerfull Todo List</title>
       </Head>
-      <Box pt={8}>
-        <Box>
-          <h1 className='text-4xl font-poppins text-center'>Hallo</h1>
-          <h2 className='text-base font-poppins text-center'>{authorizedUser?.email}</h2>
+      <Box pt={8} aria-label='dashboard-container'>
+        <Box mx={4} aria-label='activity-title'>
+          <Text fontSize={'2xl'} fontWeight={'semibold'}>
+            📜 Main Tasks
+          </Text>
         </Box>
-        <Box className='pt-12 pb-36'>
+        <Box pt={8} pb={36} aria-label='task-group-container'>
           {taskGroupEntity?.data?.data?.map((taskGroup) => (
             <TextFieldTaskGroup
               stackProps={{
@@ -146,6 +150,7 @@ export default function Dashboard() {
           ))}
         </Box>
         <Box
+          aria-label='add-task-group-container'
           display={'flex'}
           justifyContent={'center'}
           bgColor={'white'}
@@ -176,9 +181,14 @@ export default function Dashboard() {
             placeholder='Add Task'
           />
         </Box>
-        <Box>
-          {checklistGroup && isOpen && (
-            <DrawerTask taskGroup={checklistGroup} isOpen={isOpen} onClose={onClose} placement='right' />
+        <Box aria-label='drawers-container'>
+          {checklistGroup && isOpenDrawerTask && (
+            <DrawerTask
+              taskGroup={checklistGroup}
+              isOpen={isOpenDrawerTask}
+              onClose={onCloseDrawerTask}
+              placement='right'
+            />
           )}
         </Box>
       </Box>
