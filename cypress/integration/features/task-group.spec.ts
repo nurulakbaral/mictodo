@@ -1,11 +1,11 @@
 describe('Checklist Group', () => {
   const waitTimeBeforeAssert: number = 2000
   beforeEach(() => {
-    cy.then(async () => {
+    cy.window().then((window) => {
       window.localStorage.setItem(Cypress.env('localStorageKey'), Cypress.env('localStorageValue'))
       cy.visit('http://localhost:3000/dashboard')
+      cy.viewport(1280, 1000)
     })
-    cy.viewport(1280, 1000)
   })
   afterEach(() => {
     // Notes: .pause() is used to wait for the animation to finish (check your testis right)
@@ -15,7 +15,7 @@ describe('Checklist Group', () => {
     expect(Cypress.env('localStorageKey')).to.equal('supabase.auth.token')
     expect(Cypress.env('localStorageValue')).to.not.equal('')
   })
-  it('Should show dashboard page and TextFieldAddTask wrapper', () => {
+  it.skip('Should show dashboard page and TextFieldAddTask wrapper', () => {
     cy.contains('Hallo')
     cy.get('[data-testid=text-field-add-task-wrapper').should('be.visible')
   })
