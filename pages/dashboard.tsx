@@ -178,7 +178,7 @@ export default function Dashboard() {
               onKeyPress: handleAddTaskGroup,
               'data-testid': 'text-field-add-task',
             }}
-            placeholder='Add Task'
+            placeholder='Add Task-Group'
           />
         </Box>
         <Box aria-label='drawers-container'>

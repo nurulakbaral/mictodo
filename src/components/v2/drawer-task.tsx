@@ -180,7 +180,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
             onKeyPress: handleAddTaskItem,
             'data-testid': 'text-field-add-task-item',
           }}
-          placeholder='Add Task'
+          placeholder='Add Task-Item'
         />
       </Box>
       <Box>
