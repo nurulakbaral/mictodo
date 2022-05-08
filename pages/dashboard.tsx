@@ -113,7 +113,7 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Mictodo - Powerfull Todo List</title>
+        <title>Mictodo - Powerful To Do App</title>
       </Head>
       <Box pt={8} aria-label='dashboard-container'>
         <Box mx={4} aria-label='activity-title'>

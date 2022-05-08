@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Mictodo - Powerfull Todo List</title>
+        <title>Mictodo - Powerful To Do App</title>
         <link rel='icon' href='/icons/icon-48x48.png' />
         <link rel='manifest' href='/manifest.json' />
       </Head>
