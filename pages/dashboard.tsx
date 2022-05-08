@@ -93,7 +93,7 @@ export default function Dashboard() {
         </Head>
         <main className='pt-12'>
           <Box mt={36} width={'70%'} mx={'auto'}>
-            <Text textAlign={'center'}>You dont have access yet, please login first with a google account.</Text>
+            <Text textAlign={'center'}>You do not have access yet, please login first with a Google account.</Text>
           </Box>
           <Box textAlign={'center'} mt={12}>
             <BaseButton
