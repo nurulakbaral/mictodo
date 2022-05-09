@@ -6,13 +6,32 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: Deploy Mictodo to Vercel
+  test:
+    name: E2E Testing with Cypress
     runs-on: ubuntu-latest
     steps:
       - name: Clone Repository
         uses: actions/checkout@v3
-      - name: Deplot Mictodo to Vercel
+      - name: Cypreen Run
+        uses: cypress-io/github-action@v2
+        env:
+          LOCAL_STORAGE_KEY: ${{ secrets.CYPRESS_LOCAL_STORAGE_KEY }}
+          LOCAL_STORAGE_VALUE: ${{ secrets.CYPRESS_LOCAL_STORAGE_VALUE }}
+        with:
+          start: yarn run dev:app
+          spec: |
+            cypress/integration/features/login.spec.ts
+            cypress/integration/features/task-group.spec.ts
+            cypress/integration/features/task-item.spec.ts
+          browser: chrome
+  deploy:
+    name: Deploy Mictodo to Vercel
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Clone Repository
+        uses: actions/checkout@v3
+      - name: Deploy to Production
         uses: amondnet/vercel-action@v20.0.1
         # Docs: https://github.com/marketplace/actions/vercel-action#github-actions
         with:
