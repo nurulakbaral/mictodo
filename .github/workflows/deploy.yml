@@ -17,6 +17,11 @@ jobs:
         env:
           LOCAL_STORAGE_KEY: ${{ secrets.CYPRESS_LOCAL_STORAGE_KEY }}
           LOCAL_STORAGE_VALUE: ${{ secrets.CYPRESS_LOCAL_STORAGE_VALUE }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_API_KEYS: ${{ secrets.NEXT_PUBLIC_SUPABASE_API_KEYS }}
+          NEXT_PUBLIC_IS_DEVELOPMENT: ${{ secrets.NEXT_PUBLIC_IS_DEVELOPMENT }}
+          NEXT_PUBLIC_IS_RELEASE_FEATURE: ${{ secrets.NEXT_PUBLIC_IS_RELEASE_FEATURE }}
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         with:
           start: yarn run dev:app
           spec: |
