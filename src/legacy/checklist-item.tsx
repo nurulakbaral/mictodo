@@ -1,12 +1,12 @@
 import * as React from 'react'
 import type { BaseProps } from '~/src/types'
 import { Box, BoxProps, Text, TextProps, Checkbox, CheckboxProps } from '@chakra-ui/react'
-import type { TChecklistGroupEntity } from '~/src/types'
+import type { TTaskGroupEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 
 type InputChecklistProps = BaseProps<
   {
-    checklisGroupEntity: TChecklistGroupEntity
+    checklisGroupEntity: TTaskGroupEntity
     CheckboxPros: CheckboxProps
     TextProps: TextProps
   },

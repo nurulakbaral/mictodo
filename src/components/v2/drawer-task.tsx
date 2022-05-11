@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { DrawerProps, UseDisclosureProps, Box } from '@chakra-ui/react'
-import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
+import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
 import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
@@ -9,7 +9,7 @@ import { BaseTextarea } from '~/src/components/v2/base-textarea'
 import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 
 export interface DrawerTaskProps extends Pick<DrawerProps, 'placement'>, UseDisclosureProps {
-  taskGroup: TChecklistGroupEntity
+  taskGroup: TTaskGroupEntity
 }
 
 const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 'right' }: DrawerTaskProps) => {
@@ -137,7 +137,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
       {/* Task Item */}
       <Box mb={6}>
         {taskGroup &&
-          taskItemEntity?.data?.data?.map((checklisItem: TChecklistItemEntity) => (
+          taskItemEntity?.data?.data?.map((checklisItem: TTaskItemEntity) => (
             <TextFieldTaskItem
               onChangeValue={handleUpdateTaskItem(checklisItem.id)}
               stackProps={{

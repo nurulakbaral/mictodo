@@ -10,12 +10,12 @@ import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
 import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
 import { BaseButton } from '~/src/components/v2/base-button'
 import { ProgressSpinner } from '~/src/components/v2/progress-spinner'
-import type { TChecklistGroupEntity } from '~/src/types'
+import type { TTaskGroupEntity } from '~/src/types'
 
 const selectAuthorizedUser = async () => await supabaseClient.auth.user()
 export default function Dashboard() {
   const router = useRouter()
-  const [checklistGroup, setChecklistGroup] = useState<TChecklistGroupEntity | null | undefined>(null)
+  const [checklistGroup, setChecklistGroup] = useState<TTaskGroupEntity | null | undefined>(null)
   const { isOpen: isOpenDrawerTask, onOpen: onOpenDrawerTask, onClose: onCloseDrawerTask } = useDisclosure()
   const { data: authorizedUser, isLoading, isError } = useQuery('authorizedUser', selectAuthorizedUser)
   const { taskGroupEntity, taskGroupMutation } = useApiTaskGroup()
@@ -72,7 +72,7 @@ export default function Dashboard() {
       })
     }
   }
-  const handleShowDetailTaskGroup = (checklistGroup: TChecklistGroupEntity) => {
+  const handleShowDetailTaskGroup = (checklistGroup: TTaskGroupEntity) => {
     return () => {
       setChecklistGroup(checklistGroup)
       onOpenDrawerTask()
