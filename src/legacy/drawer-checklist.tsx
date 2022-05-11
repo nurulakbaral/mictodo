@@ -20,12 +20,12 @@ import { InputChecklist } from '~/src/legacy/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
 import { InputTask } from '~/src/legacy/input-task'
-import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
+import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
 import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
 
-type DrawerChecklistProps = { taskGroup: TChecklistGroupEntity } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
+type DrawerChecklistProps = { taskGroup: TTaskGroupEntity } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 type FormValues = {
   checklistItem: string
 }
@@ -128,7 +128,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
           {/* Childs */}
           <Box mb={6}>
             {taskGroup &&
-              taskItemEntity?.data?.data?.map((checklisItem: TChecklistItemEntity) => (
+              taskItemEntity?.data?.data?.map((checklisItem: TTaskItemEntity) => (
                 <InputChecklist
                   dataTestId='checklist-item-unit-on-drawer'
                   ariaLabel='item'

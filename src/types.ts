@@ -35,14 +35,14 @@ export type TUserEntity = {
   full_name: string
   email: string
 } & TDefaultEntity
-export type TChecklistGroupEntity = {
+export type TTaskGroupEntity = {
   title: string
   description: string
   is_completed: boolean
   is_priority: boolean
   user_id: string
 } & TDefaultEntity
-export type TChecklistItemEntity = {
+export type TTaskItemEntity = {
   title: string
   is_completed: boolean
   checklist_group_id: string

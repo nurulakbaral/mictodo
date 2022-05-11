@@ -2,7 +2,7 @@ import * as React from 'react'
 import type { BaseProps } from '~/src/types'
 import { InputProps, Input, Checkbox, CheckboxProps } from '@chakra-ui/react'
 import { XCircleIcon } from '@heroicons/react/outline'
-import type { TChecklistGroupEntity, TChecklistItemEntity } from '~/src/types'
+import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
 
@@ -10,7 +10,7 @@ type InputChecklistProps = BaseProps<
   {
     ariaLabel: 'group' | 'item'
     checklistItemId: string
-    taskGroup: TChecklistGroupEntity
+    taskGroup: TTaskGroupEntity
     InputProps: InputProps
     CheckboxPros: CheckboxProps
     isCloseIcon?: boolean
