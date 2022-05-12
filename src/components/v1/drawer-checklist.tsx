@@ -16,10 +16,10 @@ import {
   Flex,
   Textarea,
 } from '@chakra-ui/react'
-import { InputChecklist } from '~/src/legacy/input-checklist'
+import { InputChecklist } from '~/src/components/v1/input-checklist'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useForm } from 'react-hook-form'
-import { InputTask } from '~/src/legacy/input-task'
+import { InputTask } from '~/src/components/v1/input-task'
 import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
