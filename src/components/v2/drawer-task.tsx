@@ -3,10 +3,10 @@ import { DrawerProps, UseDisclosureProps, Box } from '@chakra-ui/react'
 import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
-import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
-import { BaseDrawer } from '~/src/components/v2/base-drawer'
-import { BaseTextarea } from '~/src/components/v2/base-textarea'
-import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
+import { TextFieldTaskItem } from '~/src/components/v2/ui/text-field-task-item'
+import { BaseDrawer } from '~/src/components/v2/ui/base-drawer'
+import { BaseTextarea } from '~/src/components/v2/ui/base-textarea'
+import { TextFieldAddTask } from '~/src/components/v2/ui/text-field-add-task'
 
 export interface DrawerTaskProps extends Pick<DrawerProps, 'placement'>, UseDisclosureProps {
   taskGroup: TTaskGroupEntity

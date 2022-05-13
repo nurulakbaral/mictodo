@@ -4,9 +4,9 @@ import { supabaseClient } from '~/src/libs/supabase-client'
 import { FcGoogle } from 'react-icons/fc'
 import { useRouter } from 'next/router'
 import type { Session } from '@supabase/supabase-js'
-import { ProgressSpinner } from '~/src/components/v2/progress-spinner'
+import { ProgressSpinner } from '~/src/components/v2/ui/progress-spinner'
 import { Box, Text } from '@chakra-ui/react'
-import { BaseButton } from '~/src/components/v2/base-button'
+import { BaseButton } from '~/src/components/v2/ui/base-button'
 
 export default function Home() {
   const router = useRouter()

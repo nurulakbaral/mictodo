@@ -23,7 +23,7 @@ import { InputTask } from '~/src/components/v1/input-task'
 import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import { useApiTaskGroup } from '~/src/hooks/use-api-task-group'
 import { useApiTaskItem } from '~/src/hooks/use-api-task-item'
-import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
+import { TextFieldTaskItem } from '~/src/components/v2/ui/text-field-task-item'
 
 type DrawerChecklistProps = { taskGroup: TTaskGroupEntity } & Pick<DrawerProps, 'placement'> & UseDisclosureProps
 type FormValues = {

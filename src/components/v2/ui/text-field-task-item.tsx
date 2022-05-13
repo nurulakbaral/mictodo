@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Box, HStack, Checkbox, Icon } from '@chakra-ui/react'
 import type { BoxProps, StackProps, CheckboxProps, IconProps, TextareaProps } from '@chakra-ui/react'
 import { HiX } from 'react-icons/hi'
-import { BaseTextarea } from '~/src/components/v2/base-textarea'
+import { BaseTextarea } from '~/src/components/v2/ui/base-textarea'
 import type { ExtendsOptionalKeys } from '~/src/types'
 
 export type TTextFieldTaskItem = {

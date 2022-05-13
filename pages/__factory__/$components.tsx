@@ -1,12 +1,12 @@
 import * as React from 'react'
 import * as C from '@chakra-ui/react'
 import { useRouter } from 'next/router'
-import { TextFieldTaskGroup } from '~/src/components/v2/text-field-task-group'
-import { TextFieldTaskItem } from '~/src/components/v2/text-field-task-item'
-import { BaseTextarea } from '~/src/components/v2/base-textarea'
-import { BaseDrawer } from '~/src/components/v2/base-drawer'
-import { TextFieldAddTask } from '~/src/components/v2/text-field-add-task'
-import { BaseButton } from '~/src/components/v2/base-button'
+import { TextFieldTaskGroup } from '~/src/components/v2/ui/text-field-task-group'
+import { TextFieldTaskItem } from '~/src/components/v2/ui/text-field-task-item'
+import { BaseTextarea } from '~/src/components/v2/ui/base-textarea'
+import { BaseDrawer } from '~/src/components/v2/ui/base-drawer'
+import { TextFieldAddTask } from '~/src/components/v2/ui/text-field-add-task'
+import { BaseButton } from '~/src/components/v2/ui/base-button'
 
 export default function FactoryComponentsPage() {
   const router = useRouter()
