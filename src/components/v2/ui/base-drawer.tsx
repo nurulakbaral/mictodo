@@ -40,6 +40,7 @@ type TBaseDrawer = {
 }
 type BaseDrawerProps = ExtendsOptionalKeys<
   TBaseDrawer,
+  undefined,
   {
     'data-testid'?: string
   }

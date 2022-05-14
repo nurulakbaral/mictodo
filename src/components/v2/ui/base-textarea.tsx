@@ -7,14 +7,15 @@ export type TBaseTextarea = {
   textareaProps?: TextareaProps
   withKeyEnter?: boolean
 }
-export type BaseTextareaProps<T> = ExtendsOptionalKeys<
-  T,
+export type BaseTextareaProps = ExtendsOptionalKeys<
+  TBaseTextarea,
+  'withKeyEnter',
   {
     'data-testid'?: string
   }
 >
 
-export const BaseTextarea = ({ textareaProps = {}, withKeyEnter = true }: BaseTextareaProps<TBaseTextarea>) => {
+export const BaseTextarea = ({ textareaProps = {}, withKeyEnter = true }: BaseTextareaProps) => {
   const { onChange, onKeyDown, bgColor = 'white', ...$textareaProps } = textareaProps as TextareaProps
   const ref = React.useRef(null)
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)

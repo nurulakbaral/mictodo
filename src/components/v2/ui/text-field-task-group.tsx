@@ -17,6 +17,7 @@ type TTextFieldTaskGroup = {
 }
 type TextFieldTaskGroupProps = ExtendsOptionalKeys<
   TTextFieldTaskGroup,
+  undefined,
   {
     'data-testid'?: string
   }

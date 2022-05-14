@@ -16,8 +16,12 @@ export type PickOptionalKeys<T> = Omit<T, keyof PickRequiredKeys<T>>
 export type ExtendsKeys<T, Options> = {
   [P in keyof T]?: T[P] & Options
 }
-export type ExtendsOptionalKeys<T, Options> = {
-  [P in keyof T]: undefined extends T[P] ? T[P] & Options : T[P]
+export type ExtendsProperties<T, K extends keyof T, Options> = {
+  [P in keyof T]: P extends K ? T[P] & Options : T[P]
+}
+export type UnExtendsProperties<T, K extends keyof T, Options> = ExtendsProperties<T, Exclude<keyof T, K>, Options>
+export type ExtendsOptionalKeys<T, K extends keyof T | undefined, Options> = {
+  [P in keyof T]: undefined extends T[P] ? (P extends K ? T[P] : T[P] & Options) : T[P]
 }
 
 /**

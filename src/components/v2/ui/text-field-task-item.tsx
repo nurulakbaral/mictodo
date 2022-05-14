@@ -16,8 +16,9 @@ export type TTextFieldTaskItem = {
   onChangeValue: (value: string) => void
 }
 
-export type TextFieldTaskItemProps<T> = ExtendsOptionalKeys<
-  T,
+export type TextFieldTaskItemProps = ExtendsOptionalKeys<
+  TTextFieldTaskItem,
+  undefined,
   {
     'data-testid'?: string
   }
@@ -32,7 +33,7 @@ export const TextFieldTaskItem = ({
   boxIconProps,
   iconProps,
   onChangeValue,
-}: TextFieldTaskItemProps<TTextFieldTaskItem>) => {
+}: TextFieldTaskItemProps) => {
   const { onBlur, onKeyPress, ...$textareaProps } = textareaProps
   const { onChange, ...$checkboxProps } = checkboxProps
   const handleSendValue = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

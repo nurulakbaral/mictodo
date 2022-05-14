@@ -4,13 +4,14 @@ import { ExtendsOptionalKeys } from '~/src/types'
 export type TProgressSpinner = {
   spinnerProps?: SpinnerProps
 }
-export type ProgressSpinnerProps<T> = ExtendsOptionalKeys<
-  T,
+export type ProgressSpinnerProps = ExtendsOptionalKeys<
+  TProgressSpinner,
+  undefined,
   {
     'data-testid'?: string
   }
 >
 
-export const ProgressSpinner = ({ spinnerProps = {} }: ProgressSpinnerProps<TProgressSpinner>) => {
+export const ProgressSpinner = ({ spinnerProps = {} }: ProgressSpinnerProps) => {
   return <Spinner size={'lg'} {...spinnerProps} />
 }

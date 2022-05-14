@@ -7,14 +7,15 @@ export type TBaseButton = {
   buttonProps?: ButtonProps
   children: React.ReactNode
 }
-export type BaseButtonProps<T> = ExtendsOptionalKeys<
-  T,
+export type BaseButtonProps = ExtendsOptionalKeys<
+  TBaseButton,
+  undefined,
   {
     'data-testid'?: string
   }
 >
 
-export const BaseButton = ({ buttonProps = {}, children }: BaseButtonProps<TBaseButton>) => {
+export const BaseButton = ({ buttonProps = {}, children }: BaseButtonProps) => {
   return (
     <Button
       py={3}

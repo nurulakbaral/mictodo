@@ -12,6 +12,7 @@ type TTextFieldAddTask = {
 
 type TextFieldAddTaskProps = ExtendsOptionalKeys<
   TTextFieldAddTask,
+  undefined,
   {
     'data-testid'?: string
   }
