@@ -1,10 +1,11 @@
 import * as React from 'react'
 import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import type { PostgrestResponse } from '@supabase/supabase-js'
+import type { UseToastOptions } from '@chakra-ui/react'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { useToast, UseToastOptions } from '@chakra-ui/react'
 import { TOptions, modifiedEntity, apiResponse } from '~/src/hooks/use-api-task-group'
+import { renderToastComponent } from '~/src/libs/toast'
 
 // Notes: Supabase fetch
 const selectTaskItem = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
@@ -44,7 +45,6 @@ const modifiedTaskItem = async ({ $options, ...taskItemEntity }: Partial<TTaskIt
 }
 
 export const useApiTaskItem = (taskGroup: TTaskGroupEntity) => {
-  const renderToastComponent = useToast()
   const queryClient = useQueryClient()
   // Notes: Select
   const taskItemEntity = useQuery(['taskItem', taskGroup?.id], selectTaskItem, {

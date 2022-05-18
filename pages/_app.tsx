@@ -7,6 +7,7 @@ import { Layout, LayoutContainer } from '~/src/components/v2'
 import { ChakraProvider } from '@chakra-ui/provider'
 import { Provider } from 'react-redux'
 import { store } from '~/src/store'
+import { ToastContainer } from '~/src/libs/toast'
 
 const queryClient = new QueryClient()
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -17,6 +18,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
           <Layout>
             <LayoutContainer>
               <Component {...pageProps} />
+              <ToastContainer />
             </LayoutContainer>
           </Layout>
         </ChakraProvider>
