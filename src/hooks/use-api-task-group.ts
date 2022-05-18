@@ -1,9 +1,10 @@
 import * as React from 'react'
 import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import type { PostgrestResponse, User } from '@supabase/supabase-js'
+import type { UseToastOptions } from '@chakra-ui/react'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
-import { useToast, UseToastOptions } from '@chakra-ui/react'
+import { renderToastComponent } from '~/src/libs/toast'
 
 type TTaskEntity = TTaskGroupEntity | TTaskItemEntity
 export type TVerb = 'INSERT' | 'UPDATE' | 'DELETE'
@@ -87,7 +88,6 @@ const modifiedTaskGroup = async ({ $options, ...taskGroupEntity }: Partial<TTask
 }
 
 export const useApiTaskGroup = () => {
-  const renderToastComponent = useToast()
   const queryClient = useQueryClient()
   const authorizedUser: User | undefined | null = queryClient.getQueryData('authorizedUser')
   // Notes: Select
