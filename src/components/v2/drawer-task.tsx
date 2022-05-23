@@ -94,7 +94,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
         isOpen,
         onClose,
         placement,
-        size: 'sm',
+        size: 'lg',
         'data-testid': 'drawer-task',
       }}
       drawerBodyProps={{

@@ -1,6 +1,14 @@
 import { extendTheme } from '@chakra-ui/react'
 
 export const theme = extendTheme({
+  breakpoints: {
+    base: '320px',
+    sm: '414px',
+    md: '576px',
+    lg: '768px',
+    xl: '1080px',
+    '2xl': '1280px',
+  },
   colors: {
     twGray: {
       50: '#f9fafb',

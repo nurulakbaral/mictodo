@@ -5,7 +5,7 @@ export interface LayoutContainerProps extends BoxProps {}
 
 export const LayoutContainer = (props: LayoutContainerProps) => {
   return (
-    <Box bgColor={'white'} minHeight={'100vh'} maxWidth={'xl'} mx={'auto'} {...props}>
+    <Box fontFamily={'poppins'} bgColor={'white'} minHeight={'100vh'} maxWidth={'xl'} mx={'auto'} {...props}>
       {props.children}
     </Box>
   )

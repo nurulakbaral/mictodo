@@ -78,7 +78,7 @@ export default function Home() {
               }}
             >
               <FcGoogle className='w-8 h-8 mr-4' />
-              <Text fontWeight={'medium'} fontSize={'lg'} fontFamily={'poppins'}>
+              <Text fontWeight={'medium'} fontSize={'lg'}>
                 Login with Google
               </Text>
             </BaseButton>
