@@ -1,3 +1,9 @@
-@tailwind base;
+/**
+ *
+ * We use Chakra-UI base styles for this project.
+ *
+*/
+
+/* @tailwind base; */
 @tailwind components;
 @tailwind utilities;
