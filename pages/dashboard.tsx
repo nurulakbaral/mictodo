@@ -164,7 +164,7 @@ export default function Dashboard() {
           borderTop={'1px solid #eaeaea'}
         >
           <TextFieldAddTask
-            boxProps={{
+            formControlProps={{
               w: 'lg',
               mx: 4,
               'data-testid': 'text-field-add-task-wrapper',

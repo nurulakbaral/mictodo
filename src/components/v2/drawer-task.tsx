@@ -166,7 +166,7 @@ const Component = ({ taskGroup, isOpen = false, onClose = () => {}, placement = 
             />
           ))}
         <TextFieldAddTask
-          boxProps={{
+          formControlProps={{
             w: 'full',
             mt: 6,
             'data-testid': 'text-field-add-task-item-wrapper',
