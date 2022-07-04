@@ -51,27 +51,29 @@ export const TextFieldAddTask = ({ boxProps, inputProps, placeholder }: TextFiel
       !['', undefined].includes(inputValue as string | undefined) ? false : !prevState,
     )
   return (
-    <Box
-      aria-label={'text-field-add-task'}
-      onFocus={handlePlaceholderFocus}
-      onBlur={handlePlaceholderBlur}
-      display={'flex'}
-      position={'relative'}
-      alignItems={'center'}
-      h={12}
-      {...boxProps}
-    >
-      {togglePlaceholder && <Placeholder placeholder={placeholder} />}
-      <Input
-        h={'full'}
-        w={'full'}
-        name='addTask'
-        onChange={handleValue}
-        value={inputValue}
-        onKeyDown={handleEnterValue}
-        type='text'
-        {...$inputProps}
-      />
-    </Box>
+    <form>
+      <Box
+        aria-label={'text-field-add-task'}
+        onFocus={handlePlaceholderFocus}
+        onBlur={handlePlaceholderBlur}
+        display={'flex'}
+        position={'relative'}
+        alignItems={'center'}
+        h={12}
+        {...boxProps}
+      >
+        {togglePlaceholder && <Placeholder placeholder={placeholder} />}
+        <Input
+          h={'full'}
+          w={'full'}
+          name='addTask'
+          onChange={handleValue}
+          value={inputValue}
+          onKeyDown={handleEnterValue}
+          type='text'
+          {...$inputProps}
+        />
+      </Box>
+    </form>
   )
 }
