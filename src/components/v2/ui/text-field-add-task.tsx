@@ -67,7 +67,8 @@ export const TextFieldAddTask = ({ boxProps, inputProps, placeholder }: TextFiel
         name='addTask'
         onChange={handleValue}
         value={inputValue}
-        onKeyPress={handleEnterValue}
+        onKeyDown={handleEnterValue}
+        type='text'
         {...$inputProps}
       />
     </Box>
