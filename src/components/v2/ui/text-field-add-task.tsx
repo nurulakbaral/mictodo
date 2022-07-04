@@ -1,11 +1,11 @@
 import * as React from 'react'
 import type { ExtendsOptionalKeys } from '~/src/types'
 import { PlusIcon } from '@heroicons/react/outline'
-import { Input, Box, Text, FormControl, FormControlProps } from '@chakra-ui/react'
+import { Input, Box, Text, FormControl } from '@chakra-ui/react'
 import type { BoxProps, InputProps } from '@chakra-ui/react'
 
 type TTextFieldAddTask = {
-  formControlProps?: FormControlProps
+  boxProps?: BoxProps
   inputProps?: InputProps
   placeholder: string
 }
@@ -25,7 +25,7 @@ const Placeholder = ({ placeholder }: Pick<TextFieldAddTaskProps, 'placeholder'>
   </Box>
 )
 
-export const TextFieldAddTask = ({ formControlProps, inputProps, placeholder }: TextFieldAddTaskProps) => {
+export const TextFieldAddTask = ({ boxProps, inputProps, placeholder }: TextFieldAddTaskProps) => {
   // Notes: Remove value and onChange props from inputProps
   const { value, onChange, onKeyPress, ...$inputProps } = inputProps as InputProps
   const [inputValue, setInputValue] = React.useState<string | number | readonly string[] | undefined>('')
@@ -36,6 +36,7 @@ export const TextFieldAddTask = ({ formControlProps, inputProps, placeholder }: 
   }
   const handleEnterValue = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      e.preventDefault()
       setInputValue('')
       onKeyPress && onKeyPress(e)
     }
@@ -50,7 +51,7 @@ export const TextFieldAddTask = ({ formControlProps, inputProps, placeholder }: 
       !['', undefined].includes(inputValue as string | undefined) ? false : !prevState,
     )
   return (
-    <FormControl
+    <Box
       aria-label={'text-field-add-task'}
       onFocus={handlePlaceholderFocus}
       onBlur={handlePlaceholderBlur}
@@ -58,7 +59,7 @@ export const TextFieldAddTask = ({ formControlProps, inputProps, placeholder }: 
       position={'relative'}
       alignItems={'center'}
       h={12}
-      {...formControlProps}
+      {...boxProps}
     >
       {togglePlaceholder && <Placeholder placeholder={placeholder} />}
       <Input
@@ -71,6 +72,6 @@ export const TextFieldAddTask = ({ formControlProps, inputProps, placeholder }: 
         type='text'
         {...$inputProps}
       />
-    </FormControl>
+    </Box>
   )
 }
