@@ -51,7 +51,13 @@ export const TextFieldAddTask = ({ boxProps, inputProps, placeholder }: TextFiel
       !['', undefined].includes(inputValue as string | undefined) ? false : !prevState,
     )
   return (
-    <form>
+    <form
+      style={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+      }}
+    >
       <Box
         aria-label={'text-field-add-task'}
         onFocus={handlePlaceholderFocus}
