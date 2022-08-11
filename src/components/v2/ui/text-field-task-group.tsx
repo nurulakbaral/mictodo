@@ -74,7 +74,7 @@ export const TextFieldTaskGroup = ({
         </Text>
       </Box>
       {/* Notes: Icon */}
-      {!process.env.NEXT_PUBLIC_IS_RELEASE_FEATURE && (
+      {process.env.NODE_ENV !== 'production' && (
         <Box
           aria-label='box-icon-component'
           // Notes: Marginleft is used to remove behave
