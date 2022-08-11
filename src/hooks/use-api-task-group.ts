@@ -3,8 +3,8 @@ import type { TTaskGroupEntity, TTaskItemEntity } from '~/src/types'
 import type { PostgrestResponse, User } from '@supabase/supabase-js'
 import type { UseToastOptions } from '@chakra-ui/react'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { supabaseClient } from '~/src/libs/supabase-client'
 import { renderToastComponent } from '~/src/libs/toast'
+import { apiSelectTaskGroup, apiAddTaskGroup, apiDeleteTaskGroup, apiUpdateTaskGroup } from '~/src/services/supabase'
 
 type TTaskEntity = TTaskGroupEntity | TTaskItemEntity
 export type TVerb = 'INSERT' | 'UPDATE' | 'DELETE'
@@ -47,10 +47,7 @@ export const modifiedEntity = ({
 
 // Notes: Supabase fetch
 const selectTaskGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
-  const response = await supabaseClient
-    .from<TTaskGroupEntity>('$DB_checklist_group')
-    .select('*')
-    .eq('user_id', queryKey[1])
+  const response = await apiSelectTaskGroup({ user_id: queryKey[1] })
   if (response.error) {
     throw new Error(response.error.message)
   }
@@ -61,27 +58,13 @@ const modifiedTaskGroup = async ({ $options, ...taskGroupEntity }: Partial<TTask
   const { verb } = $options
   switch (verb) {
     case 'INSERT':
-      response = await supabaseClient.from<TTaskGroupEntity>('$DB_checklist_group').insert([
-        {
-          title: taskGroupEntity.title,
-          description: '',
-          is_completed: false,
-          is_priority: false,
-          user_id: taskGroupEntity.user_id,
-        },
-      ])
+      response = await apiAddTaskGroup(taskGroupEntity)
       break
     case 'UPDATE':
-      response = await supabaseClient
-        .from<TTaskGroupEntity>('$DB_checklist_group')
-        .update({ ...taskGroupEntity })
-        .match({ id: taskGroupEntity.id })
+      response = await apiUpdateTaskGroup(taskGroupEntity)
       break
     case 'DELETE':
-      response = await supabaseClient
-        .from<TTaskGroupEntity>('$DB_checklist_group')
-        .delete()
-        .match({ id: taskGroupEntity.id })
+      response = await apiDeleteTaskGroup(taskGroupEntity)
       break
   }
   return apiResponse(response)

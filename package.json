@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev:app": "next dev",
-    "test:cy": "cypress open",
+    "test:cy": "cypress run --headless",
     "build:app": "next build",
     "start:app": "next start",
     "lint": "next lint",
