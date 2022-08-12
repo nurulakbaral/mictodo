@@ -45,7 +45,6 @@ export const modifiedEntity = ({
   }
 }
 
-// Notes: Supabase fetch
 const selectTaskGroup = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
   const response = await apiSelectTaskGroup({ user_id: queryKey[1] })
   if (response.error) {
@@ -77,7 +76,6 @@ export const useApiTaskGroup = () => {
   const taskGroupEntity = useQuery(['taskGroup', authorizedUser?.id], selectTaskGroup, {
     enabled: !!authorizedUser,
   })
-  // Notes: Modify data (INSERT, UPDATE, DELETE)
   const taskGroupMutation = useMutation(modifiedTaskGroup, {
     onSuccess: (
       freshResponse: PostgrestResponse<TTaskGroupEntity>,

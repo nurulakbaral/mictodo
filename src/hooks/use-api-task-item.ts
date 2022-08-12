@@ -6,39 +6,25 @@ import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { supabaseClient } from '~/src/libs/supabase-client'
 import { TOptions, modifiedEntity, apiResponse } from '~/src/hooks/use-api-task-group'
 import { renderToastComponent } from '~/src/libs/toast'
+import { apiSelectTaskItem, apiAddTaskItem, apiUpdateTaskItem, apiDeleteTaskItem } from '~/src/services/supabase'
 
-// Notes: Supabase fetch
 const selectTaskItem = async ({ queryKey }: { queryKey: Array<string | undefined> }) => {
-  const response = await supabaseClient
-    .from<TTaskItemEntity>('$DB_checklist_item')
-    .select('*')
-    .eq('checklist_group_id', queryKey[1])
+  const response = await apiSelectTaskItem({ checklist_group_id: queryKey[1] })
   return apiResponse(response)
 }
+
 const modifiedTaskItem = async ({ $options, ...taskItemEntity }: Partial<TTaskItemEntity> & TOptions) => {
   let response
   const { verb } = $options
   switch (verb) {
     case 'INSERT':
-      response = await supabaseClient.from<TTaskItemEntity>('$DB_checklist_item').insert([
-        {
-          title: taskItemEntity.title,
-          is_completed: false,
-          checklist_group_id: taskItemEntity.checklist_group_id,
-        },
-      ])
+      response = await apiAddTaskItem(taskItemEntity)
       break
     case 'UPDATE':
-      response = await supabaseClient
-        .from<TTaskItemEntity>('$DB_checklist_item')
-        .update({ ...taskItemEntity })
-        .match({ id: taskItemEntity.id })
+      response = await apiUpdateTaskItem(taskItemEntity)
       break
     case 'DELETE':
-      response = await supabaseClient
-        .from<TTaskItemEntity>('$DB_checklist_item')
-        .delete()
-        .match({ id: taskItemEntity.id })
+      response = await apiDeleteTaskItem(taskItemEntity)
       break
   }
   return apiResponse(response)
@@ -50,7 +36,6 @@ export const useApiTaskItem = (taskGroup: TTaskGroupEntity) => {
   const taskItemEntity = useQuery(['taskItem', taskGroup?.id], selectTaskItem, {
     enabled: !!taskGroup,
   })
-  // Notes: Modify data (INSERT, UPDATE, DELETE)
   const taskItemMutation = useMutation(modifiedTaskItem, {
     onSuccess: (
       freshResponse: PostgrestResponse<TTaskItemEntity>,

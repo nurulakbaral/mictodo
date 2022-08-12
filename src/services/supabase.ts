@@ -33,3 +33,37 @@ export async function apiUpdateTaskGroup({ id, ...taskGroupEntity }: Partial<TTa
 export async function apiDeleteTaskGroup({ id }: Partial<TTaskGroupEntity>) {
   return supabaseClient.from<TTaskGroupEntity>('$DB_checklist_group').delete().match({ id })
 }
+
+/**
+ *
+ *  Task Item API Services
+ *
+ */
+
+export async function apiSelectTaskItem({ checklist_group_id }: Partial<TTaskItemEntity>) {
+  return supabaseClient
+    .from<TTaskItemEntity>('$DB_checklist_item')
+    .select('*')
+    .eq('checklist_group_id', checklist_group_id)
+}
+
+export async function apiAddTaskItem({ title, checklist_group_id }: Partial<TTaskItemEntity>) {
+  return supabaseClient.from<TTaskItemEntity>('$DB_checklist_item').insert([
+    {
+      title,
+      is_completed: false,
+      checklist_group_id,
+    },
+  ])
+}
+
+export async function apiUpdateTaskItem({ id, ...taskItemEntity }: Partial<TTaskItemEntity>) {
+  return supabaseClient
+    .from<TTaskItemEntity>('$DB_checklist_item')
+    .update({ ...taskItemEntity })
+    .match({ id })
+}
+
+export async function apiDeleteTaskItem({ id }: Partial<TTaskItemEntity>) {
+  return supabaseClient.from<TTaskItemEntity>('$DB_checklist_item').delete().match({ id })
+}
